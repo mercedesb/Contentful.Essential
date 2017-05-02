@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package >
+	<metadata>
+		<id>Contentful.Essential</id>
+		<version>0.3-beta</version>
+		<authors>Mercedes Bernard</authors>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>Core functionality for working with Contentful .NET SDK</description>
+		<releaseNotes>Initial pack.</releaseNotes>
+		<copyright>Copyright 2017</copyright>
+		<contentFiles>
+			<files include="web.config*.xdt" buildAction="Content" />
+		</contentFiles>
+		<!--<dependencies>
+			<dependency id="contentful.csharp" version="[0.12.1-beta, )" />
+		</dependencies>-->
+	</metadata>
+	<files>
+		<file src="web.config*.xdt" target="content" />
+	</files>
+</package>
