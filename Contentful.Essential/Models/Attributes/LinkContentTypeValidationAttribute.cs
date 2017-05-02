@@ -28,18 +28,26 @@ namespace Contentful.Essential.Models.Attributes
 				{
 					if (typeof(IEntry).IsAssignableFrom(type))
 					{
-						//TODO: handle base classes
-						var contentTypeDef = (ContentTypeDefinitionAttribute)Attribute.GetCustomAttribute(type, typeof(ContentTypeDefinitionAttribute));
+						ContentTypeDefinitionAttribute contentTypeDef = (ContentTypeDefinitionAttribute)Attribute.GetCustomAttribute(type, typeof(ContentTypeDefinitionAttribute));
 						if (contentTypeDef != null)
 							contentTypeIds.Add(contentTypeDef.ContentTypeId);
+
+						IEnumerable<Type> childTypes = type.Assembly.GetTypes().Where(t => t != type && type.IsAssignableFrom(t));
+						foreach (var subClass in childTypes)
+						{
+							contentTypeDef = (ContentTypeDefinitionAttribute)Attribute.GetCustomAttribute(subClass, typeof(ContentTypeDefinitionAttribute));
+							if (contentTypeDef != null)
+								contentTypeIds.Add(contentTypeDef.ContentTypeId);
+						}
 					}
 				}
 				if (contentTypeIds.Any())
-					return new LinkContentTypeValidator(contentTypeIds, Message);
+					return new LinkContentTypeValidator(contentTypeIds.Distinct(), Message);
 
 				return null;
 			}
 		}
+
 		public string[] ValidFieldTypes
 		{
 			get

@@ -203,27 +203,31 @@ namespace Contentful.Essential.Application
 					{
 						field.Items = new Schema();
 
-						//TODO: fix this
-						if (prop.PropertyType.IsGenericType && typeof(IEnumerable<>).IsAssignableFrom(prop.PropertyType.GetGenericTypeDefinition()))
-						{
-							Type itemType = prop.PropertyType.GetGenericArguments()[0]; // use this...
-							FieldLinkType? fieldItemLinkType;
-							string fieldItemType = GetFieldType(itemType, out fieldItemLinkType);
+						Type itemType = null;
+						if (prop.PropertyType.IsGenericType)
+							itemType = prop.PropertyType.GetGenericArguments()[0]; // generic type parameter
+						if (prop.PropertyType.IsArray)
+							itemType = prop.PropertyType.GetElementType();
 
-							if (fieldItemType == SystemFieldTypes.Link)
-							{
-								field.Items.Type = fieldItemType.ToString();
-								field.Items.LinkType = fieldItemLinkType.ToString();
-							}
-							// only list of strings is supported
-							else
-							{
-								field.Items.Type = SystemFieldTypes.Symbol.ToString();
-							}
-							List<IFieldValidator> itemValidators = GetValidations(prop, fieldItemType, fieldLinkType);
-							if (itemValidators.Any())
-								field.Items.Validations = itemValidators;
+						if (itemType == null)
+							continue; // don't add this field
+
+						FieldLinkType? fieldItemLinkType;
+						string fieldItemType = GetFieldType(itemType, out fieldItemLinkType);
+
+						if (fieldItemType == SystemFieldTypes.Link)
+						{
+							field.Items.Type = fieldItemType;
+							field.Items.LinkType = fieldItemLinkType.ToString();
 						}
+						// only list of strings is supported
+						else
+						{
+							field.Items.Type = SystemFieldTypes.Symbol.ToString();
+						}
+						List<IFieldValidator> itemValidators = GetValidations(prop, fieldItemType, fieldLinkType);
+						if (itemValidators.Any())
+							field.Items.Validations = itemValidators;
 					}
 
 					List<IFieldValidator> validators = GetValidations(prop, field.Type, fieldLinkType);
