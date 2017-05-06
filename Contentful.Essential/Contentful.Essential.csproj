@@ -31,8 +31,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Contentful.Core, Version=0.12.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\contentful.csharp.0.12.1-beta\lib\netstandard1.4\Contentful.Core.dll</HintPath>
+    <Reference Include="Contentful.Core, Version=0.13.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\contentful.csharp.0.13.0-beta\lib\netstandard1.4\Contentful.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
@@ -182,22 +182,20 @@
     <Compile Include="Models\Attributes\UniqueValidationAttribute.cs" />
     <Compile Include="Models\BaseContentRepository.cs" />
     <Compile Include="Models\BaseEntry.cs" />
+    <Compile Include="Models\Configuration\EntryDynamicTypeJsonConverter.cs" />
     <Compile Include="Models\IEntry.cs" />
     <Compile Include="Models\IHaveFieldValidation.cs" />
-    <Compile Include="Models\IRepository.cs" />
-    <Compile Include="Models\Location.cs" />
-    <Compile Include="Models\Management\CustomValidationsJsonConverter.cs" />
-    <Compile Include="Models\Management\DateRangeValidator.cs" />
+    <Compile Include="Models\IContentRepository.cs" />
     <Compile Include="Models\Management\FieldComparer.cs" />
-    <Compile Include="Models\Management\FieldValidatorContractResolver.cs" />
-    <Compile Include="Models\Management\FileSizeValidator.cs" />
-    <Compile Include="Models\Management\ImageSizeValidator.cs" />
-    <Compile Include="Models\Management\MimeTypeValidator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SystemLog.cs" />
+    <Compile Include="Utility\EntryExtensions.cs" />
+    <Compile Include="Utility\JTokenExtensions.cs" />
     <Compile Include="Utility\ReflectionExtensions.cs" />
+    <Compile Include="Utility\StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Contentful.Essential.nuspec">
       <SubType>Designer</SubType>
     </None>

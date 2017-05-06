@@ -9,10 +9,4 @@
 		Asset
 	}
 
-	public enum FileSizeUnit
-	{
-		Byte,
-		KB,
-		MB
-	}
 }
