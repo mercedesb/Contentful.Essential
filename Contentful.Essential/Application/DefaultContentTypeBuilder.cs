@@ -288,27 +288,52 @@ namespace Contentful.Essential.Application
         {
             linkType = null;
 
-            if (type == typeof(string))
-                return SystemFieldTypes.Symbol;
-            if (type == typeof(int) || type == typeof(long))
+            if (type == typeof(int) || type == typeof(int?))
+            {
                 return SystemFieldTypes.Integer;
-            if (type == typeof(double) || type == typeof(decimal))
-                return SystemFieldTypes.Number;
-            if (type == typeof(bool))
-                return SystemFieldTypes.Boolean;
-            if (type == typeof(DateTime))
-                return SystemFieldTypes.Date;
-            if (type.IsEnum)
+            }
+
+            if (type == typeof(string))
+            {
                 return SystemFieldTypes.Symbol;
+            }
+
+            if (type == typeof(float) || type == typeof(decimal) || type == typeof(double) || type == typeof(float?) || type == typeof(decimal?) || type == typeof(double?))
+            {
+                return SystemFieldTypes.Number;
+            }
+
+            if (type.IsEnum)
+            {
+                return SystemFieldTypes.Symbol;
+            }
+
             if (type == typeof(Location))
+            {
                 return SystemFieldTypes.Location;
-            if (type == typeof(Asset))
+            }
+
+            if (type == typeof(DateTime) || type == typeof(DateTime?))
+            {
+                return SystemFieldTypes.Date;
+            }
+
+            if (type == typeof(bool) || type == typeof(bool?))
+            {
+                return SystemFieldTypes.Boolean;
+            }
+
+            if (type == typeof(Asset) || type == typeof(ManagementAsset) || (type.IsConstructedGenericType && type.GetGenericTypeDefinition() == typeof(Entry<>)))
             {
                 linkType = FieldLinkType.Asset;
                 return SystemFieldTypes.Link;
             }
-            if (typeof(IEnumerable).IsAssignableFrom(type))
+
+            if (typeof(ICollection).IsAssignableFrom(type))
+            {
                 return SystemFieldTypes.Array;
+            }
+
             if (typeof(IContentType).IsAssignableFrom(type))
             {
                 linkType = FieldLinkType.Entry;
@@ -320,7 +345,7 @@ namespace Contentful.Essential.Application
                 linkType = FieldLinkType.Entry;
                 return SystemFieldTypes.Link;
             }
-            if (type.IsClass && type != typeof(SystemProperties)) // || type.IsInterface
+            if (type.IsClass && type != typeof(SystemProperties))
                 return SystemFieldTypes.Object;
 
             return SystemFieldTypes.Symbol;
