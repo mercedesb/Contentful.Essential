@@ -2,7 +2,7 @@
 <package >
 	<metadata>
 		<id>Contentful.Essential</id>
-		<version>0.5-beta</version>
+		<version>0.6-beta</version>
 		<authors>Mercedes Bernard</authors>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>Core functionality for working with Contentful .NET SDK</description>
