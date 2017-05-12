@@ -157,29 +157,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application\BootStrapper.cs" />
+    <Compile Include="Application\ContentfulCodeFirstConfiguration.cs" />
+    <Compile Include="Application\ContentTypeBuilder.cs" />
     <Compile Include="Application\ContentTypeConfig.cs" />
-    <Compile Include="Application\DefaultContentTypeBuilder.cs" />
-    <Compile Include="Application\IContentTypeBuilder.cs" />
+    <Compile Include="Application\FieldTypeConverter.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Configuration\ContentfulEssentialSection.cs" />
     <Compile Include="Configuration\ContentfulOptionsElement.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="Http\Contentful.cs" />
-    <Compile Include="Models\Attributes\ContentTypeDefinitionAttribute.cs" />
-    <Compile Include="Models\Attributes\DateRangeValidationAttribute.cs" />
+    <Compile Include="Contentful.cs" />
+    <Compile Include="Models\Attributes\ContentFieldAttribute.cs" />
+    <Compile Include="Models\Attributes\ContentTypeAttribute.cs" />
     <Compile Include="Models\Attributes\EditorInterfaceControlAttribute.cs" />
-    <Compile Include="Models\Attributes\FileSizeValidationAttribute.cs" />
-    <Compile Include="Models\Attributes\ImageSizeValidationAttribute.cs" />
-    <Compile Include="Models\Attributes\InValuesValidationAttribute.cs" />
-    <Compile Include="Models\Attributes\LinkContentTypeValidationAttribute.cs" />
-    <Compile Include="Models\Attributes\LocalizedAttribute.cs" />
-    <Compile Include="Models\Attributes\LongStringAttribute.cs" />
-    <Compile Include="Models\Attributes\MimeTypeValidationAttribute.cs" />
-    <Compile Include="Models\Attributes\OmittedAttribute.cs" />
-    <Compile Include="Models\Attributes\RangeValidationAttribute.cs" />
-    <Compile Include="Models\Attributes\RegexValidationAttribute.cs" />
-    <Compile Include="Models\Attributes\SizeValidationAttribute.cs" />
-    <Compile Include="Models\Attributes\UniqueValidationAttribute.cs" />
+    <Compile Include="Models\Attributes\IgnoreContentFieldAttribute.cs" />
+    <Compile Include="Models\Attributes\ValidationAttributes.cs" />
     <Compile Include="Models\BaseContentRepository.cs" />
     <Compile Include="Models\BaseEntry.cs" />
     <Compile Include="Models\Configuration\EntryDynamicTypeJsonConverter.cs" />

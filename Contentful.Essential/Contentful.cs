@@ -17,7 +17,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Contentful.Essential.Http
+namespace Contentful.Essential
 {
     public sealed class ContentDelivery
     {

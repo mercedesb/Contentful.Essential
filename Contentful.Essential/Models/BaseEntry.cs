@@ -1,18 +1,18 @@
-﻿using Contentful.Core.Models;
-using Contentful.Essential.Models.Attributes;
+﻿using Contentful.CodeFirst;
+using Contentful.Core.Models;
 using System;
 
 namespace Contentful.Essential.Models
 {
     public abstract class BaseEntry : IContentType
     {
-        protected ContentTypeDefinitionAttribute _contentTypeDef;
-        protected virtual ContentTypeDefinitionAttribute ContentTypeDefinition
+        protected ContentTypeAttribute _contentTypeDef;
+        protected virtual ContentTypeAttribute ContentTypeDefinition
         {
             get
             {
                 if (_contentTypeDef == null)
-                    _contentTypeDef = (ContentTypeDefinitionAttribute)Attribute.GetCustomAttribute(this.GetType(), typeof(ContentTypeDefinitionAttribute));
+                    _contentTypeDef = (ContentTypeAttribute)Attribute.GetCustomAttribute(this.GetType(), typeof(ContentTypeAttribute));
 
                 return _contentTypeDef;
             }
@@ -26,7 +26,7 @@ namespace Contentful.Essential.Models
                 if (Sys != null)
                     return Sys.ContentType.SystemProperties.Id;
                 else if (ContentTypeDefinition != null)
-                    return ContentTypeDefinition.ContentTypeId;
+                    return ContentTypeDefinition.Id ?? this.GetType().FullName;
 
                 return string.Empty;
             }
@@ -39,7 +39,7 @@ namespace Contentful.Essential.Models
                 if (Sys != null)
                     return Sys.ContentType.Name;
                 else if (ContentTypeDefinition != null)
-                    return ContentTypeDefinition.Name;
+                    return ContentTypeDefinition.Name ?? this.GetType().FullName;
                 else
                     return string.Empty;
             }

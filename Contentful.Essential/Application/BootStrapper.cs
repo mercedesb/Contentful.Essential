@@ -22,8 +22,6 @@ namespace Contentful.Essential.Application
                     scan.AddAllTypesOf<IHaveFieldValidation>();
                 });
 
-            For<IContentTypeBuilder>().Use<DefaultContentTypeBuilder>();
-
             For(typeof(IContentRepository<>)).Use(typeof(BaseContentRepository<>));
         }
     }

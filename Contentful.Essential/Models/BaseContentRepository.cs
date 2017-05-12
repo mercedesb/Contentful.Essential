@@ -1,7 +1,6 @@
-﻿using Contentful.Core.Models;
+﻿using Contentful.CodeFirst;
+using Contentful.Core.Models;
 using Contentful.Core.Search;
-using Contentful.Essential.Http;
-using Contentful.Essential.Models.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,10 +13,10 @@ namespace Contentful.Essential.Models
     {
         public virtual async Task<Entry<T>> Get(string id)
         {
-            ContentTypeDefinitionAttribute contentTypeIdAttr = (ContentTypeDefinitionAttribute)Attribute.GetCustomAttribute(typeof(T), typeof(ContentTypeDefinitionAttribute));
+            ContentTypeAttribute contentTypeIdAttr = (ContentTypeAttribute)Attribute.GetCustomAttribute(typeof(T), typeof(ContentTypeAttribute));
             if (contentTypeIdAttr != null)
             {
-                var builder = new QueryBuilder<Entry<T>>().ContentTypeIs(contentTypeIdAttr.ContentTypeId).FieldEquals(f => f.SystemProperties.Id, id);
+                var builder = new QueryBuilder<Entry<T>>().ContentTypeIs(contentTypeIdAttr.Id ?? typeof(T).FullName).FieldEquals(f => f.SystemProperties.Id, id);
                 // need to use GetEntries b/c including referenced content is only supported for the methods that return collections. 
                 Entry<T> entry = (await ContentDelivery.Instance.GetEntriesAsync<Entry<T>>(builder)).FirstOrDefault();
                 return entry;
@@ -27,10 +26,10 @@ namespace Contentful.Essential.Models
 
         public virtual async Task<IEnumerable<Entry<T>>> GetAll()
         {
-            ContentTypeDefinitionAttribute contentTypeIdAttr = (ContentTypeDefinitionAttribute)Attribute.GetCustomAttribute(typeof(T), typeof(ContentTypeDefinitionAttribute));
+            ContentTypeAttribute contentTypeIdAttr = (ContentTypeAttribute)Attribute.GetCustomAttribute(typeof(T), typeof(ContentTypeAttribute));
             if (contentTypeIdAttr != null)
             {
-                var builder = new QueryBuilder<Entry<T>>().ContentTypeIs(contentTypeIdAttr.ContentTypeId);
+                var builder = new QueryBuilder<Entry<T>>().ContentTypeIs(contentTypeIdAttr.Id ?? typeof(T).FullName);
                 IEnumerable<Entry<T>> entries = await ContentDelivery.Instance.GetEntriesAsync<Entry<T>>(builder);
                 return entries;
             }
