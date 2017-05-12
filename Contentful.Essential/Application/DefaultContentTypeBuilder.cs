@@ -273,7 +273,6 @@ namespace Contentful.Essential.Application
             return attr;
         }
 
-        // TODO: need to handle JSONobject and location
         protected virtual string GetFieldType(PropertyInfo prop, out FieldLinkType? linkType)
         {
             string fieldType = GetFieldType(prop.PropertyType, out linkType);
