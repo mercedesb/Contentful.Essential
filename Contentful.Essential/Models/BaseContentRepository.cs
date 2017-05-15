@@ -35,5 +35,11 @@ namespace Contentful.Essential.Models
             }
             return Enumerable.Empty<Entry<T>>();
         }
+
+        public virtual async Task<IEnumerable<Entry<T>>> Search(QueryBuilder<Entry<T>> builder)
+        {
+            IEnumerable<Entry<T>> entries = await ContentDelivery.Instance.GetEntriesAsync<Entry<T>>(builder);
+            return entries;
+        }
     }
 }

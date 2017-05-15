@@ -116,6 +116,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.3.0\lib\netstandard1.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
       <Private>True</Private>
@@ -171,9 +172,11 @@
     <Compile Include="Models\Attributes\EditorInterfaceControlAttribute.cs" />
     <Compile Include="Models\Attributes\IgnoreContentFieldAttribute.cs" />
     <Compile Include="Models\Attributes\ValidationAttributes.cs" />
+    <Compile Include="Models\BaseCachedContentRepository.cs" />
     <Compile Include="Models\BaseContentRepository.cs" />
     <Compile Include="Models\BaseEntry.cs" />
     <Compile Include="Models\Configuration\EntryDynamicTypeJsonConverter.cs" />
+    <Compile Include="Models\ICachedContentRepository.cs" />
     <Compile Include="Models\IEntry.cs" />
     <Compile Include="Models\IHaveFieldValidation.cs" />
     <Compile Include="Models\IContentRepository.cs" />
@@ -184,6 +187,11 @@
     <Compile Include="Utility\JTokenExtensions.cs" />
     <Compile Include="Utility\ReflectionExtensions.cs" />
     <Compile Include="Utility\StringExtensions.cs" />
+    <Compile Include="WebHooks\IWebHookHandler.cs" />
+    <Compile Include="WebHooks\Receivers\CacheInvalidationWebHookReceiver.cs" />
+    <Compile Include="WebHooks\WebHookDispatcher.cs" />
+    <Compile Include="WebHooks\WebHookRequestMessage.cs" />
+    <Compile Include="WebHooks\WebHookResponseMessage.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
