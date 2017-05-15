@@ -17,6 +17,7 @@ namespace Contentful.Essential.Models
                 return _contentTypeDef;
             }
         }
+        [IgnoreContentField]
         public SystemProperties Sys { get; set; }
 
         public string ContentTypeId
