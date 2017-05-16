@@ -27,7 +27,7 @@ namespace Contentful.Essential.Models
                 if (Sys != null)
                     return Sys.ContentType.SystemProperties.Id;
                 else if (ContentTypeDefinition != null)
-                    return ContentTypeDefinition.Id ?? this.GetType().FullName;
+                    return ContentTypeDefinition.Id ?? this.GetType().Name;
 
                 return string.Empty;
             }
