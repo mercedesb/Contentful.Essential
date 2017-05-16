@@ -5,19 +5,17 @@ using Microsoft.Practices.ServiceLocation;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Contentful.Essential.Application
 {
     public class ContentTypeConfig
     {
-        // TODO: should this go in the sample site?
-        public static async Task RegisterContentTypes()
+        public static void RegisterContentTypes()
         {
             IEnumerable<IContentType> registeredContentTypes = ServiceLocator.Current.GetAllInstances<IContentType>();
             var types = registeredContentTypes.Select(ct => ct.GetType()).Where(c => c.GetTypeInfo().IsClass && c.GetTypeInfo().GetCustomAttribute<ContentTypeAttribute>() != null);
             var contentTypesToCreate = ContentTypeBuilder.InitializeContentTypes(types);
-            var createdContentTypes = await ContentTypeBuilder.CreateContentTypes(contentTypesToCreate, GetConfig(), ContentManagement.Instance);
+            var createdContentTypes = ContentTypeBuilder.CreateContentTypes(contentTypesToCreate, GetConfig(), ContentManagement.Instance).Result;
         }
 
         private static ContentfulCodeFirstConfiguration GetConfig()
