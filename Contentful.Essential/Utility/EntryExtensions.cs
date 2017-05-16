@@ -1,4 +1,5 @@
-﻿using Contentful.Core.Models;
+﻿using Contentful.CodeFirst;
+using Contentful.Core.Models;
 using Contentful.Essential.Models;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -22,7 +23,7 @@ namespace Contentful.Essential.Utility
             Dictionary<string, object> localeValues;
             foreach (var prop in props)
             {
-                if (prop.GetSetMethod() == null)
+                if (prop.GetSetMethod() == null || prop.GetCustomAttribute<IgnoreContentFieldAttribute>() != null)
                     continue;
 
                 localeValues = new Dictionary<string, object>();
