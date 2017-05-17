@@ -108,77 +108,77 @@ namespace Contentful.Essential.Models.Configuration
                 case (JTokenType.Boolean):
                     if (typeof(bool).IsAssignableFrom(prop.PropertyType))
                     {
-                        prop.SetValue(result, localeValue?.ToBool());
+                        prop.SetValue(result, localeValue.Value.ToBool());
                     }
                     else if (typeof(bool?).IsAssignableFrom(prop.PropertyType))
                     {
-                        prop.SetValue(result, localeValue?.ToNullableBool());
+                        prop.SetValue(result, localeValue.Value.ToNullableBool());
                     }
                     break;
                 case (JTokenType.Date):
                     if (typeof(DateTime).IsAssignableFrom(prop.PropertyType))
                     {
-                        prop.SetValue(result, localeValue?.ToDateTime());
+                        prop.SetValue(result, localeValue.Value.ToDateTime());
                     }
                     else if (typeof(DateTime?).IsAssignableFrom(prop.PropertyType))
                     {
-                        prop.SetValue(result, localeValue?.ToNullableDateTime());
+                        prop.SetValue(result, localeValue.Value.ToNullableDateTime());
                     }
                     break;
                 case (JTokenType.Float):
                     if (typeof(float).IsAssignableFrom(prop.PropertyType))
                     {
-                        prop.SetValue(result, localeValue?.ToFloat());
+                        prop.SetValue(result, localeValue.Value.ToFloat());
                     }
                     else if (typeof(float?).IsAssignableFrom(prop.PropertyType))
                     {
-                        prop.SetValue(result, localeValue?.ToNullableFloat());
+                        prop.SetValue(result, localeValue.Value.ToNullableFloat());
                     }
                     else if (typeof(double).IsAssignableFrom(prop.PropertyType))
                     {
-                        prop.SetValue(result, (double)localeValue?.ToFloat());
+                        prop.SetValue(result, (double)localeValue.Value.ToFloat());
                     }
                     else if (typeof(double?).IsAssignableFrom(prop.PropertyType))
                     {
-                        prop.SetValue(result, (double?)localeValue?.ToNullableFloat());
+                        prop.SetValue(result, (double?)localeValue.Value.ToNullableFloat());
                     }
                     else if (typeof(decimal).IsAssignableFrom(prop.PropertyType))
                     {
-                        prop.SetValue(result, (decimal)localeValue?.ToFloat());
+                        prop.SetValue(result, (decimal)localeValue.Value.ToFloat());
                     }
                     else if (typeof(decimal?).IsAssignableFrom(prop.PropertyType))
                     {
-                        prop.SetValue(result, (decimal?)localeValue?.ToNullableFloat());
+                        prop.SetValue(result, (decimal?)localeValue.Value.ToNullableFloat());
                     }
                     break;
                 case (JTokenType.Guid):
                     if (typeof(Guid).IsAssignableFrom(prop.PropertyType))
                     {
-                        prop.SetValue(result, localeValue?.ToGuid());
+                        prop.SetValue(result, localeValue.Value.ToGuid());
                     }
                     else if (typeof(Guid?).IsAssignableFrom(prop.PropertyType))
                     {
-                        prop.SetValue(result, localeValue?.ToNullableGuid());
+                        prop.SetValue(result, localeValue.Value.ToNullableGuid());
                     }
                     break;
                 case (JTokenType.Integer):
                     if (typeof(int).IsAssignableFrom(prop.PropertyType))
                     {
-                        prop.SetValue(result, localeValue?.ToInt());
+                        prop.SetValue(result, localeValue.Value.ToInt());
                     }
                     else if (typeof(int?).IsAssignableFrom(prop.PropertyType))
                     {
-                        prop.SetValue(result, localeValue?.ToNullableInt());
+                        prop.SetValue(result, localeValue.Value.ToNullableInt());
                     }
                     break;
                 case (JTokenType.TimeSpan):
                     if (typeof(TimeSpan).IsAssignableFrom(prop.PropertyType))
                     {
-                        prop.SetValue(result, localeValue?.ToTimeSpan());
+                        prop.SetValue(result, localeValue.Value.ToTimeSpan());
                     }
                     else if (typeof(TimeSpan?).IsAssignableFrom(prop.PropertyType))
                     {
-                        prop.SetValue(result, localeValue?.ToNullableTimeSpan());
+                        prop.SetValue(result, localeValue.Value.ToNullableTimeSpan());
                     }
                     break;
                 case (JTokenType.Array):
