@@ -16,11 +16,8 @@ namespace Contentful.Essential.Utility
 {
     public static class EntryExtensions
     {
-        public static Entry<dynamic> GetDynamicEntry<T>(this T model, string locale = "") where T : IContentType
+        public static Entry<dynamic> GetDynamicEntry<T>(this T model, string locale) where T : IContentType
         {
-            if (string.IsNullOrWhiteSpace(locale))
-                locale = "en-US"; // TODO: set to space's default locale
-
             Entry<dynamic> entryWrapper = new Entry<dynamic>();
             entryWrapper.SystemProperties = model.Sys;
 
@@ -46,12 +43,18 @@ namespace Contentful.Essential.Utility
 
         public static string GetContentTypeId<T>(this T model) where T : IContentType
         {
-            ContentTypeAttribute contentTypeDef = (ContentTypeAttribute)Attribute.GetCustomAttribute(model.GetType(), typeof(ContentTypeAttribute));
 
             if (model.Sys != null)
                 return model.Sys.ContentType.SystemProperties.Id;
-            else if (contentTypeDef != null)
-                return contentTypeDef.Id ?? model.GetType().Name;
+            else
+                return GetContentTypeId(model.GetType());
+        }
+
+        public static string GetContentTypeId(this Type contentType)
+        {
+            ContentTypeAttribute contentTypeDef = (ContentTypeAttribute)Attribute.GetCustomAttribute(contentType, typeof(ContentTypeAttribute));
+            if (contentTypeDef != null)
+                return contentTypeDef.Id ?? contentType.Name;
 
             return string.Empty;
         }
@@ -81,13 +84,15 @@ namespace Contentful.Essential.Utility
             return default(T);
         }
 
-        public static T ToDeliveryEntry<T>(this IManagementContentType model, string locale) where T : class, IContentType, new()
+        public static T ToDeliveryEntry<T, V>(this Entry<V> model, string locale)
+            where T : class, IContentType, new()
+            where V : class, IManagementContentType
         {
             try
             {
                 Type deliveryType = typeof(T);
                 T result = new T();
-                foreach (PropertyInfo mgmtProp in model.GetType().GetProperties())
+                foreach (PropertyInfo mgmtProp in model.Fields.GetType().GetProperties())
                 {
                     Type mgmtPropType = mgmtProp.PropertyType;
 
@@ -97,7 +102,7 @@ namespace Contentful.Essential.Utility
                         || !typeof(string).IsAssignableFrom(mgmtPropType.GetGenericArguments()[0]))
                         continue;
 
-                    PropertyInfo deliveryProp = deliveryType.GetProperty(mgmtProp.Name, BindingFlags.Instance | BindingFlags.IgnoreCase);
+                    PropertyInfo deliveryProp = deliveryType.GetProperty(mgmtProp.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase);
                     // if a property with a matching name doesn't exist on the delivery type, skip
                     if (deliveryProp == null)
                         continue;
@@ -106,25 +111,26 @@ namespace Contentful.Essential.Utility
                         continue;
 
                     // if mgmt prop's second dictionary argument type is not assignable from the delivery prop's type, skip
-                    if (!mgmtPropType.GetGenericArguments()[1].GetType().IsAssignableFrom(deliveryProp.GetType()))
+                    if (!mgmtPropType.GetGenericArguments()[1].IsAssignableFrom(deliveryProp.PropertyType))
                         continue;
 
-                    IDictionary mgmtPropValue = (IDictionary)mgmtProp.GetValue(model);
+                    IDictionary mgmtPropValue = (IDictionary)mgmtProp.GetValue(model.Fields);
                     try
                     {
                         deliveryProp.SetValue(result, mgmtPropValue[locale]);
                     }
                     catch (Exception ex)
                     {
-                        SystemLog.Log(typeof(EntryExtensions), $"Unable to set property {deliveryProp.Name} on object of type {typeof(T)} from object of type {model.GetType()}", Level.Error, ex);
+                        SystemLog.Log(typeof(EntryExtensions), $"Unable to set property {deliveryProp.Name} on object of type {typeof(T)} from object of type {model.Fields.GetType()}", Level.Error, ex);
 
                     }
                 }
+                result.Sys = model.SystemProperties;
                 return result;
             }
             catch (Exception ex)
             {
-                SystemLog.Log(typeof(EntryExtensions), $"Unable to convert object of type {model.GetType()} to {typeof(T)}", Level.Error, ex);
+                SystemLog.Log(typeof(EntryExtensions), $"Unable to convert object of type {model.Fields.GetType()} to {typeof(T)}", Level.Error, ex);
                 return default(T);
             }
         }
