@@ -160,7 +160,7 @@
     <Compile Include="Application\BootStrapper.cs" />
     <Compile Include="Application\ContentfulCodeFirstConfiguration.cs" />
     <Compile Include="Application\ContentTypeBuilder.cs" />
-    <Compile Include="Application\ContentTypeConfig.cs" />
+    <Content Include="Application\ContentTypeConfig.cs" />
     <Compile Include="Application\FieldTypeConverter.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Configuration\ContentfulEssentialSection.cs" />
@@ -177,7 +177,7 @@
     <Compile Include="Models\BaseEntry.cs" />
     <Compile Include="Models\Configuration\EntryDynamicTypeJsonConverter.cs" />
     <Compile Include="Models\ICachedContentRepository.cs" />
-    <Compile Include="Models\IEntry.cs" />
+    <Compile Include="Models\IContentType.cs" />
     <Compile Include="Models\IHaveFieldValidation.cs" />
     <Compile Include="Models\IContentRepository.cs" />
     <Compile Include="Models\Management\FieldComparer.cs" />

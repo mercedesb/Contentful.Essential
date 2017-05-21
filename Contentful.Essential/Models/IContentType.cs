@@ -7,6 +7,6 @@ namespace Contentful.Essential.Models
         SystemProperties Sys { get; set; }
     }
 
-    public interface IManagementContentType<T> where T : IContentType
+    public interface IManagementContentType
     { }
 }

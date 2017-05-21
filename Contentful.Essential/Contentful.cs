@@ -4,15 +4,12 @@ using Contentful.Core.Models;
 using Contentful.Essential.Configuration;
 using Contentful.Essential.Models;
 using Contentful.Essential.Models.Configuration;
-using Contentful.Essential.Utility;
 using log4net.Core;
 using Microsoft.Extensions.Options;
-using Microsoft.Practices.ServiceLocation;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,11 +28,11 @@ namespace Contentful.Essential
     public class ContentManagement
     {
         private static readonly ContentManagement instance = new ContentManagement();
-        private static readonly ContentManagementClient client = new ContentManagementClient(new HttpClient(), ConfigurationManager.Instance.ContentfulOptions);
+        private static readonly ContentfulManagementClient client = new ContentfulManagementClient(new HttpClient(), ConfigurationManager.Instance.ContentfulOptions);
 
         private ContentManagement() { }
 
-        public static ContentManagementClient Instance { get { return client; } }
+        public static ContentfulManagementClient Instance { get { return client; } }
         public class ContentManagementClient : ContentfulManagementClient
         {
             internal JsonSerializer EntryDynamicSerializer => JsonSerializer.Create(EntryDynamicSerializerSettings);
@@ -77,139 +74,106 @@ namespace Contentful.Essential
             }))
             {
             }
-            public virtual async Task<Entry<T>> ArchiveEntryAsync<T>(Entry<T> model, string locale = "", string spaceId = null, CancellationToken cancellationToken = default(CancellationToken)) where T : class, IContentType
-            {
-                return await ArchiveEntryAsync<T>(model.SystemProperties.Id, model.SystemProperties.Version ?? 0, spaceId, cancellationToken);
-            }
-            public virtual async Task<Entry<T>> ArchiveEntryAsync<T>(string entryId, int version, string spaceId = null, CancellationToken cancellationToken = default(CancellationToken)) where T : class, IContentType
+
+            public virtual async Task<Entry<T>> ArchiveEntryAsync<T>(string entryId, int version, string spaceId = null, CancellationToken cancellationToken = default(CancellationToken))
+                where T : class, IManagementContentType
             {
                 Entry<dynamic> archived = await base.ArchiveEntryAsync(entryId, version, spaceId, cancellationToken);
-                T fields = DeserializeResultFields<T>(archived.Fields);
-                if (fields != default(T))
-                {
-                    return new Entry<T>
-                    {
-                        SystemProperties = archived.SystemProperties,
-                        Fields = fields
-                    };
-                }
-                // fall back behavior. request was successful, but unable to deserialize so let's use the CDN to get it.
-                Entry<T> archivedContent = await ServiceLocator.Current.GetInstance<IContentRepository<T>>().Get(archived.SystemProperties.Id);
-                return archivedContent;
+
+                T fields = archived.Fields.ToObject<T>();
+                Entry<T> responseEntry = new Entry<T>();
+                responseEntry.SystemProperties = archived.SystemProperties;
+                responseEntry.Fields = fields;
+
+                return responseEntry;
             }
-            public virtual async Task<Entry<T>> CreateEntryAsync<T>(T model, string locale = "", string spaceId = null, CancellationToken cancellationToken = default(CancellationToken)) where T : class, IContentType
+
+            public virtual async Task<Entry<T>> CreateEntryAsync<T>(Entry<T> model, string contentTypeId, string spaceId = null, CancellationToken cancellationToken = default(CancellationToken))
+                where T : class, IManagementContentType
             {
-                Entry<dynamic> created = await base.CreateEntryAsync(model.GetDynamicEntry<T>(), model.ContentTypeId, spaceId, cancellationToken);
-                T fields = DeserializeResultFields<T>(created.Fields);
-                if (fields != default(T))
-                {
-                    return new Entry<T>
-                    {
-                        SystemProperties = created.SystemProperties,
-                        Fields = fields
-                    };
-                }
-                Entry<T> newContent = await ServiceLocator.Current.GetInstance<IContentRepository<T>>().Get(created.SystemProperties.Id);
-                return newContent;
+                Entry<dynamic> entry = new Entry<dynamic>();
+                entry.SystemProperties = model.SystemProperties;
+                entry.Fields = model.Fields;
+
+                Entry<dynamic> created = await base.CreateEntryAsync(entry, contentTypeId, spaceId, cancellationToken);
+
+                T fields = created.Fields.ToObject<T>();
+                Entry<T> responseEntry = new Entry<T>();
+                responseEntry.SystemProperties = created.SystemProperties;
+                responseEntry.Fields = fields;
+
+                return responseEntry;
             }
-            public virtual async Task<Entry<T>> CreateOrUpdateEntryAsync<T>(T model, string locale = "", string spaceId = null, int? version = null, CancellationToken cancellationToken = default(CancellationToken)) where T : class, IContentType
+
+            public virtual async Task<Entry<T>> CreateOrUpdateEntryAsync<T>(Entry<T> model, string spaceId = null, string contentTypeId = null, int? version = null, CancellationToken cancellationToken = default(CancellationToken))
+                where T : class, IManagementContentType
             {
-                Entry<dynamic> created = await base.CreateOrUpdateEntryAsync(model.GetDynamicEntry<T>(), spaceId, model.ContentTypeId, version, cancellationToken);
-                T fields = DeserializeResultFields<T>(created.Fields);
-                if (fields != default(T))
-                {
-                    return new Entry<T>
-                    {
-                        SystemProperties = created.SystemProperties,
-                        Fields = fields
-                    };
-                }
-                // fall back behavior. request was successful, but unable to deserialize so let's use the CDN to get it. 
-                // Note: Version won't be populated
-                Entry<T> newContent = await ServiceLocator.Current.GetInstance<IContentRepository<T>>().Get(created.SystemProperties.Id);
-                return newContent;
+                Entry<dynamic> entry = new Entry<dynamic>();
+                entry.SystemProperties = model.SystemProperties;
+                entry.Fields = model.Fields;
+
+                Entry<dynamic> created = await base.CreateOrUpdateEntryAsync(entry, spaceId, contentTypeId, version, cancellationToken);
+
+                T fields = created.Fields.ToObject<T>();
+                Entry<T> responseEntry = new Entry<T>();
+                responseEntry.SystemProperties = created.SystemProperties;
+                responseEntry.Fields = fields;
+
+                return responseEntry;
             }
-            public virtual async Task<Entry<T>> GetEntryAsync<T>(string entryId, string locale = "", string spaceId = null, CancellationToken cancellationToken = default(CancellationToken)) where T : class, IContentType
+            public virtual async Task<Entry<T>> GetEntryAsync<T>(string entryId, string spaceId = null, CancellationToken cancellationToken = default(CancellationToken))
+                where T : class, IManagementContentType
             {
                 Entry<dynamic> entry = await base.GetEntryAsync(entryId, spaceId, cancellationToken);
-                T fields = DeserializeResultFields<T>(entry.Fields);
-                if (fields != default(T))
-                {
-                    return new Entry<T>
-                    {
-                        SystemProperties = entry.SystemProperties,
-                        Fields = fields
-                    };
-                }
 
-                // fall back behavior. request was successful, but unable to deserialize so let's use the CDN to get it.
-                Entry<T> content = await ServiceLocator.Current.GetInstance<IContentRepository<T>>().Get(entry.SystemProperties.Id);
-                return content;
+                T fields = entry.Fields.ToObject<T>();
+                Entry<T> responseEntry = new Entry<T>();
+                responseEntry.SystemProperties = entry.SystemProperties;
+                responseEntry.Fields = fields;
+
+                return responseEntry;
             }
-            public virtual async Task<Entry<T>> PublishEntryAsync<T>(Entry<T> model, string locale = "", string spaceId = null, CancellationToken cancellationToken = default(CancellationToken)) where T : class, IContentType
-            {
-                return await PublishEntryAsync<T>(model.SystemProperties.Id, model.SystemProperties.Version ?? 0, spaceId, cancellationToken);
-            }
-            public virtual async Task<Entry<T>> PublishEntryAsync<T>(string entryId, int version, string spaceId = null, CancellationToken cancellationToken = default(CancellationToken)) where T : class, IContentType
+
+            public virtual async Task<Entry<T>> PublishEntryAsync<T>(string entryId, int version, string spaceId = null, CancellationToken cancellationToken = default(CancellationToken))
+                where T : class, IManagementContentType
             {
                 Entry<dynamic> published = await PublishEntryAsync(entryId, version, spaceId, cancellationToken);
-                T fields = DeserializeResultFields<T>(published.Fields);
-                if (fields != default(T))
-                {
-                    return new Entry<T>
-                    {
-                        SystemProperties = published.SystemProperties,
-                        Fields = fields
-                    };
-                }
 
-                // fall back behavior. request was successful, but unable to deserialize so let's use the CDN to get it.
-                Entry<T> publishedContent = await ServiceLocator.Current.GetInstance<IContentRepository<T>>().Get(published.SystemProperties.Id);
-                return publishedContent;
+                T fields = published.Fields.ToObject<T>();
+                Entry<T> responseEntry = new Entry<T>();
+                responseEntry.SystemProperties = published.SystemProperties;
+                responseEntry.Fields = fields;
+
+                return responseEntry;
             }
-            public virtual async Task<Entry<T>> UnarchiveEntryAsync<T>(Entry<T> model, string locale = "", string spaceId = null, CancellationToken cancellationToken = default(CancellationToken)) where T : class, IContentType
-            {
-                return await UnarchiveEntryAsync<T>(model.SystemProperties.Id, model.SystemProperties.Version ?? 0, spaceId, cancellationToken);
-            }
-            public virtual async Task<Entry<T>> UnarchiveEntryAsync<T>(string entryId, int version, string spaceId = null, CancellationToken cancellationToken = default(CancellationToken)) where T : class, IContentType
+
+            public virtual async Task<Entry<T>> UnarchiveEntryAsync<T>(string entryId, int version, string spaceId = null, CancellationToken cancellationToken = default(CancellationToken))
+                where T : class, IManagementContentType
             {
                 Entry<dynamic> unarchived = await UnarchiveEntryAsync(entryId, version, spaceId, cancellationToken);
-                T fields = DeserializeResultFields<T>(unarchived.Fields);
-                if (fields != default(T))
-                {
-                    return new Entry<T>
-                    {
-                        SystemProperties = unarchived.SystemProperties,
-                        Fields = fields
-                    };
-                }
 
-                // fall back behavior. request was successful, but unable to deserialize so let's use the CDN to get it.
-                Entry<T> unarchivedContent = await ServiceLocator.Current.GetInstance<IContentRepository<T>>().Get(unarchived.SystemProperties.Id);
-                return unarchivedContent;
+                T fields = unarchived.Fields.ToObject<T>();
+                Entry<T> responseEntry = new Entry<T>();
+                responseEntry.SystemProperties = unarchived.SystemProperties;
+                responseEntry.Fields = fields;
+
+                return responseEntry;
             }
-            public virtual async Task<Entry<T>> UnpublishEntryAsync<T>(Entry<T> model, string locale = "", string spaceId = null, CancellationToken cancellationToken = default(CancellationToken)) where T : class, IContentType
-            {
-                return await UnpublishEntryAsync<T>(model.SystemProperties.Id, model.SystemProperties.Version ?? 0, spaceId, cancellationToken);
-            }
-            public virtual async Task<Entry<T>> UnpublishEntryAsync<T>(string entryId, int version, string spaceId = null, CancellationToken cancellationToken = default(CancellationToken)) where T : class, IContentType
+
+            public virtual async Task<Entry<T>> UnpublishEntryAsync<T>(string entryId, int version, string spaceId = null, CancellationToken cancellationToken = default(CancellationToken))
+                where T : class, IManagementContentType
             {
                 Entry<dynamic> unpublished = await UnpublishEntryAsync(entryId, version, spaceId, cancellationToken);
-                T fields = DeserializeResultFields<T>(unpublished.Fields);
-                if (fields != default(T))
-                {
-                    return new Entry<T>
-                    {
-                        SystemProperties = unpublished.SystemProperties,
-                        Fields = fields
-                    };
-                }
 
-                // fall back behavior. request was successful, but unable to deserialize so let's use the CDN to get it.
-                Entry<T> unpublishedContent = await ServiceLocator.Current.GetInstance<IContentRepository<T>>().Get(unpublished.SystemProperties.Id);
-                return unpublishedContent;
+                T fields = unpublished.Fields.ToObject<T>();
+                Entry<T> responseEntry = new Entry<T>();
+                responseEntry.SystemProperties = unpublished.SystemProperties;
+                responseEntry.Fields = fields;
+
+                return responseEntry;
             }
-            protected virtual T DeserializeResultFields<T>(dynamic fields, string locale = "") where T : class, IContentType
+
+            protected virtual Dictionary<string, T> DeserializeResultFields<T>(dynamic fields) where T : class, IContentType
             {
                 JObject returnedFields = fields as JObject;
                 if (returnedFields != null)
@@ -217,20 +181,16 @@ namespace Contentful.Essential
                     try
                     {
                         Dictionary<string, T> allLocales = returnedFields.ToObject<Dictionary<string, T>>(EntryDynamicSerializer);
-                        if (!allLocales.ContainsKey(locale))
-                        {
-                            SystemLog.Log(this, $"Entry for locale {locale} does not exist. Returning default instead", Level.Warn);
-                            return allLocales.First().Value;
-                        }
-                        return allLocales[locale];
+                        return allLocales;
                     }
                     catch (Exception ex)
                     {
-                        SystemLog.Log(this, $"Unable to deserialize CMA response to type {typeof(T)}", Level.Error, ex);
+                        SystemLog.Log(this, $"Unable to deserialize CMA response to type {typeof(Dictionary<string, T>)}", Level.Error, ex);
                     }
                 }
-                return default(T);
+                return default(Dictionary<string, T>);
             }
+
         }
     }
 }

@@ -45,7 +45,9 @@ namespace Contentful.Essential.Models.Configuration
                 if (prop.GetSetMethod() == null)
                     continue;
 
-                jToken = jsonObject[prop.Name.ToCamelCase()];
+                jsonObject.TryGetValue(prop.Name, StringComparison.InvariantCultureIgnoreCase, out jToken);
+
+                //jToken = jsonObject[prop.Name.ToCamelCase()];
                 if (jToken != null)
                 {
                     foreach (JProperty localeValue in jToken.Children<JProperty>())
