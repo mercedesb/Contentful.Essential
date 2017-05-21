@@ -134,5 +134,60 @@ namespace Contentful.Essential.Utility
                 return default(T);
             }
         }
+
+        public static Entry<T> ToManagementEntry<T, V>(this V model, string locale)
+            where T : class, IManagementContentType, new()
+            where V : class, IContentType
+        {
+            try
+            {
+                Type mgmtType = typeof(T);
+                T result = new T();
+                foreach (PropertyInfo deliveryProp in model.GetType().GetProperties())
+                {
+                    PropertyInfo mgmtProp = mgmtType.GetProperty(deliveryProp.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase);
+                    // if a property with a matching name doesn't exist on the mgmt type, skip
+                    if (mgmtProp == null)
+                        continue;
+
+                    if (mgmtProp.GetSetMethod() == null)
+                        continue;
+
+                    Type mgmtPropType = mgmtProp.PropertyType;
+                    // if the type of the property is not Dictionary<string, someType>, skip
+                    if (!mgmtPropType.IsGenericType
+                        || !typeof(Dictionary<,>).IsAssignableFrom(mgmtPropType.GetGenericTypeDefinition())
+                        || !typeof(string).IsAssignableFrom(mgmtPropType.GetGenericArguments()[0]))
+                        continue;
+
+                    // if mgmt prop's second dictionary argument type is not assignable from the delivery prop's type, skip
+                    if (!mgmtPropType.GetGenericArguments()[1].IsAssignableFrom(deliveryProp.PropertyType))
+                        continue;
+
+                    var dlvyPropValue = deliveryProp.GetValue(model);
+                    try
+                    {
+                        var dictionaryType = typeof(Dictionary<,>).MakeGenericType(typeof(string), deliveryProp.PropertyType);
+                        var mgmtPropValue = (IDictionary)Activator.CreateInstance(dictionaryType);
+                        mgmtPropValue[locale] = dlvyPropValue;
+                        mgmtProp.SetValue(result, mgmtPropValue);
+                    }
+                    catch (Exception ex)
+                    {
+                        SystemLog.Log(typeof(EntryExtensions), $"Unable to set property {mgmtProp.Name} on object of type {typeof(T)} from object of type {model.GetType()}", Level.Error, ex);
+
+                    }
+                }
+                Entry<T> entry = new Entry<T>();
+                entry.SystemProperties = model.Sys;
+                entry.Fields = result;
+                return entry;
+            }
+            catch (Exception ex)
+            {
+                SystemLog.Log(typeof(EntryExtensions), $"Unable to convert object of type {model.GetType()} to {typeof(T)}", Level.Error, ex);
+                return default(Entry<T>);
+            }
+        }
     }
 }

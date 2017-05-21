@@ -24,5 +24,22 @@ namespace Contentful.Essential.Tests
             Assert.AreEqual(mgmt.Number["en-US"], dlvy.Number);
             Assert.AreEqual(mgmt.IsTrue["en-US"], dlvy.IsTrue);
         }
+
+        [TestMethod]
+        public void TestDeliveryEntryToMgmtEntry()
+        {
+            TestDlvyEntry1 dlvy = new TestDlvyEntry1
+            {
+                Title = "this is a title",
+                Number = 3,
+                IsTrue = true
+            };
+
+            Entry<TestMgmtEntry1> mgmt = dlvy.ToManagementEntry<TestMgmtEntry1, TestDlvyEntry1>("en-US");
+            Assert.IsNotNull(mgmt);
+            Assert.AreEqual(dlvy.Title, mgmt.Fields.Title["en-US"]);
+            Assert.AreEqual(dlvy.Number, mgmt.Fields.Number["en-US"]);
+            Assert.AreEqual(dlvy.IsTrue, mgmt.Fields.IsTrue["en-US"]);
+        }
     }
 }

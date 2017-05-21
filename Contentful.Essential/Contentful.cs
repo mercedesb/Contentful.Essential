@@ -28,11 +28,11 @@ namespace Contentful.Essential
     public class ContentManagement
     {
         private static readonly ContentManagement instance = new ContentManagement();
-        private static readonly ContentfulManagementClient client = new ContentfulManagementClient(new HttpClient(), ConfigurationManager.Instance.ContentfulOptions);
+        private static readonly ContentManagementClient client = new ContentManagementClient(new HttpClient(), ConfigurationManager.Instance.ContentfulOptions);
 
         private ContentManagement() { }
 
-        public static ContentfulManagementClient Instance { get { return client; } }
+        public static ContentManagementClient Instance { get { return client; } }
         public class ContentManagementClient : ContentfulManagementClient
         {
             internal JsonSerializer EntryDynamicSerializer => JsonSerializer.Create(EntryDynamicSerializerSettings);
