@@ -19,10 +19,10 @@ namespace Contentful.Essential.Models
             _repo = new BaseContentRepository<T>();
         }
 
-        public virtual async Task<Entry<T>> Get(string id)
+        public virtual async Task<T> Get(string id)
         {
             string cacheKey = GetCacheKey(id);
-            Entry<T> result = MemoryCache.Default[cacheKey] as Entry<T>;
+            T result = MemoryCache.Default[cacheKey] as T;
             if (result == null)
             {
                 result = await _repo.Get(id);
@@ -35,17 +35,17 @@ namespace Contentful.Essential.Models
             return result;
         }
 
-        public virtual async Task<IEnumerable<Entry<T>>> GetAll()
+        public virtual async Task<IEnumerable<T>> GetAll()
         {
             string cacheKey = GetCacheKey();
-            IEnumerable<Entry<T>> result = MemoryCache.Default[cacheKey] as IEnumerable<Entry<T>>;
+            IEnumerable<T> result = MemoryCache.Default[cacheKey] as IEnumerable<T>;
             if (result == null)
             {
                 result = await _repo.GetAll();
                 if (result != null)
                 {
                     CacheItemPolicy policy = new CacheItemPolicy();
-                    policy.ChangeMonitors.Add(MemoryCache.Default.CreateCacheEntryChangeMonitor(result.Select(r => GetCacheKey(r.SystemProperties.Id))));
+                    policy.ChangeMonitors.Add(MemoryCache.Default.CreateCacheEntryChangeMonitor(result.Select(r => GetCacheKey(r.Sys.Id))));
                     MemoryCache.Default.Add(cacheKey, result, policy);
                 }
             }
@@ -53,17 +53,17 @@ namespace Contentful.Essential.Models
             return result;
         }
 
-        public virtual async Task<IEnumerable<Entry<T>>> Search(QueryBuilder<Entry<T>> builder)
+        public virtual async Task<IEnumerable<T>> Search(QueryBuilder<T> builder)
         {
             string cacheKey = GetCacheKey();
-            IEnumerable<Entry<T>> result = MemoryCache.Default[cacheKey] as IEnumerable<Entry<T>>;
+            IEnumerable<T> result = MemoryCache.Default[cacheKey] as IEnumerable<T>;
             if (result == null)
             {
-                result = await ContentDelivery.Instance.GetEntriesAsync<Entry<T>>(builder);
+                result = await ContentDelivery.Instance.GetEntriesAsync<T>(builder);
                 if (result != null)
                 {
                     CacheItemPolicy policy = new CacheItemPolicy();
-                    policy.ChangeMonitors.Add(MemoryCache.Default.CreateCacheEntryChangeMonitor(result.Select(r => GetCacheKey(r.SystemProperties.Id))));
+                    policy.ChangeMonitors.Add(MemoryCache.Default.CreateCacheEntryChangeMonitor(result.Select(r => GetCacheKey(r.Sys.Id))));
                     MemoryCache.Default.Add(cacheKey, result, policy);
                 }
             }

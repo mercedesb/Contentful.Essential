@@ -1,5 +1,4 @@
-﻿using Contentful.Core.Models;
-using Contentful.Core.Search;
+﻿using Contentful.Core.Search;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -7,8 +6,8 @@ namespace Contentful.Essential.Models
 {
     public interface IContentRepository<T> where T : class
     {
-        Task<IEnumerable<Entry<T>>> GetAll();
-        Task<Entry<T>> Get(string id);
-        Task<IEnumerable<Entry<T>>> Search(QueryBuilder<Entry<T>> builder);
+        Task<IEnumerable<T>> GetAll();
+        Task<T> Get(string id);
+        Task<IEnumerable<T>> Search(QueryBuilder<T> builder);
     }
 }
