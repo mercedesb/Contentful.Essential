@@ -165,11 +165,11 @@
     <Compile Include="Application\ContentTypeBuilder.cs" />
     <Content Include="Application\ContentTypeConfig.cs" />
     <Compile Include="Application\FieldTypeConverter.cs" />
-    <Compile Include="Configuration\ConfigurationManager.cs" />
-    <Compile Include="Configuration\ContentfulEssentialSection.cs" />
-    <Compile Include="Configuration\ContentfulOptionsElement.cs" />
+    <Compile Include="ContentDelivery.cs" />
+    <Compile Include="Models\BaseCachedContentRepositoryPurger.cs" />
+    <Compile Include="Models\Configuration\IContentfulOptions.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="Contentful.cs" />
+    <Compile Include="ContentManagement.cs" />
     <Compile Include="Models\Attributes\ContentFieldAttribute.cs" />
     <Compile Include="Models\Attributes\ContentTypeAttribute.cs" />
     <Compile Include="Models\Attributes\EditorInterfaceControlAttribute.cs" />

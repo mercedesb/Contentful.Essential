@@ -9,52 +9,14 @@ using System.Threading;
 
 namespace Contentful.Essential.Models
 {
-    public class BaseCachedContentRepositoryPurger : IPurgeCachedContentRepository
-    {
-        protected const string CACHE_KEY = "Entries";
-        protected const string CTS_KEY = "Cts";
-
-        protected readonly IMemoryCache _cache;
-        public BaseCachedContentRepositoryPurger(IMemoryCache memoryCache)
-        {
-            _cache = memoryCache;
-        }
-
-        public virtual void PurgeCache(string id)
-        {
-            string cacheKey = GetCacheKey(id);
-            if (_cache.TryGetValue(cacheKey, out object val))
-            {
-                _cache.Remove(cacheKey);
-            }
-            else
-            {
-                string ctsKey = GetCancellationTokenSourceCacheKey(GetCacheKey(id));
-                CancellationTokenSource cts = _cache.Get<CancellationTokenSource>(ctsKey);
-                if (cts != null)
-                    cts.Cancel();
-            }
-        }
-
-        protected virtual string GetCacheKey(string id)
-        {
-            return $"{CACHE_KEY}_{id}";
-        }
-
-        protected virtual string GetCancellationTokenSourceCacheKey(string entryKey)
-        {
-            return $"{CTS_KEY}_{entryKey}";
-        }
-    }
-
     public class BaseCachedContentRepository<T> : BaseCachedContentRepositoryPurger, IContentRepository<T>
           where T : class, IContentType
     {
         protected readonly IContentRepository<T> _repo;
 
-        public BaseCachedContentRepository(IMemoryCache memoryCache) : base(memoryCache)
+        public BaseCachedContentRepository(IContentDeliveryClient deliveryClient, IMemoryCache memoryCache) : base(memoryCache)
         {
-            _repo = new BaseContentRepository<T>();
+            _repo = new BaseContentRepository<T>(deliveryClient);
         }
 
         public virtual async Task<T> Get(string id)
@@ -112,7 +74,7 @@ namespace Contentful.Essential.Models
             IEnumerable<T> result;
             if (!_cache.TryGetValue(cacheKey, out result))
             {
-                result = await ContentDelivery.Instance.GetEntriesAsync<T>(builder);
+                result = await _repo.Search(builder);
                 if (result != null)
                 {
                     MemoryCacheEntryOptions opts = new MemoryCacheEntryOptions();
