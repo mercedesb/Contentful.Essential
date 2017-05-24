@@ -68,13 +68,11 @@ namespace Contentful.CodeFirst
         {
             if (IsAsset(type))
             {
-                // TODO: use SystemLinkTypes.Asset when available
-                return "Asset";
+                return SystemLinkTypes.Asset;
             }
             else if (IsEntry(type))
             {
-                // TODO: use SystemLinkTypes.Entry when available
-                return "Entry";
+                return SystemLinkTypes.Entry;
             }
             return null;
         }

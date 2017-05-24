@@ -1,8 +1,7 @@
 ﻿namespace Contentful.Essential.Models
 {
-    public interface ICachedContentRepository
+    public interface IPurgeCachedContentRepository
     {
-        void PurgeCache();
         void PurgeCache(string id);
     }
 }

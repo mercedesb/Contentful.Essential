@@ -5,38 +5,38 @@ using System;
 
 namespace Contentful.Essential.WebHooks.Receivers
 {
-    public class CacheInvalidationWebHookReceiver : IWebHookHandler
+    public class CacheInvalidationWebHookReceiver : BaseWebHookReceiver
     {
-        public string[] ForActions
+        protected readonly IPurgeCachedContentRepository _purge;
+        public CacheInvalidationWebHookReceiver(IPurgeCachedContentRepository purge)
+        {
+            _purge = purge;
+        }
+
+        public override string[] ForActions
         {
             get
             {
-                // TODO: consts for these values
-                return new[] { "publish", "unpublish" };
+                return new[] { WebHookActions.Publish, WebHookActions.Unpublish };
             }
         }
 
-        public string[] ForTypes
+        public override string[] ForTypes
         {
             get
             {
-                // TODO: consts for these values
-                return new[] { "Entry" };
+                return new[] { WebHookTypes.Entry };
             }
         }
 
 
-        public WebHookResponseMessage Process(WebHookRequestMessage request)
+        public override WebHookResponseMessage Process(WebHookRequestMessage request)
         {
             JsonSerializerSettings settings = new JsonSerializerSettings();
             var jsonObject = request.GetJsonObject();
 
             Entry<dynamic> updatedEntry = jsonObject.ToObject<Entry<dynamic>>(JsonSerializer.Create(settings));
-
-            //TODO: will need to handle abstract type...
-            var repoType = typeof(BaseCachedContentRepository<>).MakeGenericType(typeof(BaseEntry));
-            ICachedContentRepository repo = (ICachedContentRepository)Activator.CreateInstance(repoType);
-            repo.PurgeCache(updatedEntry.SystemProperties.Id);
+            _purge.PurgeCache(updatedEntry.SystemProperties.Id);
 
             return new WebHookResponseMessage($"Cache purged for {updatedEntry.SystemProperties.Id}");
         }

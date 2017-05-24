@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Content\App_Start\ContentTypeConfig.cs.pp" />
+    <Content Include="content\App_Start\ContentTypeConfig.cs.pp" />
   </ItemGroup>
 
   <ItemGroup>
