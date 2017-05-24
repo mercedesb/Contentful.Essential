@@ -105,6 +105,15 @@ namespace Contentful.Essential.Models.Configuration
                     {
                         prop.SetValue(result, localeValue.Value.ToString());
                     }
+                    else if (typeof(DateTime).IsAssignableFrom(prop.PropertyType))
+                    {
+                        prop.SetValue(result, localeValue.Value.ToDateTime());
+
+                    }
+                    else if (typeof(DateTime?).IsAssignableFrom(prop.PropertyType))
+                    {
+                        prop.SetValue(result, localeValue.Value.ToNullableDateTime());
+                    }
                     break;
                 case (JTokenType.Boolean):
                     if (typeof(bool).IsAssignableFrom(prop.PropertyType))
