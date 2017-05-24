@@ -30,4 +30,9 @@ namespace Contentful.CodeFirst
         /// </summary>
         public bool PublishAutomatically { get; set; }
     }
+
+    public class MWContentfulCodeFirstConfiguration : ContentfulCodeFirstConfiguration
+    {
+        public bool CamelcaseFieldIdsAutomatically { get; set; }
+    }
 }

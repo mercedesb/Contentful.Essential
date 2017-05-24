@@ -1,6 +1,7 @@
 ﻿using Contentful.Core;
 using Contentful.Core.Models;
 using Contentful.Core.Models.Management;
+using Contentful.Essential.Utility;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -43,7 +44,7 @@ namespace Contentful.CodeFirst
         /// </summary>
         /// <param name="types">The types to be transformed into content types. Could be chained to the output of the <see cref="LoadTypes(Assembly)"/> method.</param>
         /// <returns>An enumerable of <see cref="ContentType"/> ready to be created/updated in Contentful.</returns>
-        public static IEnumerable<ContentType> InitializeContentTypes(IEnumerable<Type> types)
+        public static IEnumerable<ContentType> InitializeContentTypes(IEnumerable<Type> types, bool camelCaseFieldIds = false)
         {
             types = types.OrderBy(c => c.GetTypeInfo().GetCustomAttribute<ContentTypeAttribute>()?.Order ?? 0);
 
@@ -82,7 +83,7 @@ namespace Contentful.CodeFirst
                     var fieldAttribute = prop.GetCustomAttribute<ContentFieldAttribute>() ?? new ContentFieldAttribute();
                     var field = new Field()
                     {
-                        Id = fieldAttribute.Id ?? prop.Name,
+                        Id = fieldAttribute.Id ?? (camelCaseFieldIds ? prop.Name.ToCamelCase() : prop.Name),
                         Name = fieldAttribute.Name ?? prop.Name,
                         Type = fieldAttribute.Type ?? FieldTypeConverter.Convert(prop.PropertyType),
                         Disabled = fieldAttribute.Disabled,
@@ -178,10 +179,10 @@ namespace Contentful.CodeFirst
         /// <param name="configuration">The configuration for the creation process.</param>
         /// <param name="client">The optional client to use for creation.</param>
         /// <returns>A list of created or updated content types.</returns>
-        public static async Task<List<ContentType>> CreateContentTypesFromAssembly(string assemblyName, ContentfulCodeFirstConfiguration configuration, IContentfulManagementClient client = null)
+        public static async Task<List<ContentType>> CreateContentTypesFromAssembly(string assemblyName, MWContentfulCodeFirstConfiguration configuration, IContentfulManagementClient client = null)
         {
             var types = LoadTypes(assemblyName);
-            var contentTypesToCreate = InitializeContentTypes(types);
+            var contentTypesToCreate = InitializeContentTypes(types, configuration.CamelcaseFieldIdsAutomatically);
             var createdContentTypes = await CreateContentTypes(contentTypesToCreate, configuration, client);
             return createdContentTypes;
         }
