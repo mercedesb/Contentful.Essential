@@ -7,6 +7,12 @@ namespace Contentful.Essential.WebHooks.Receivers
 {
     public class CacheInvalidationWebHookReceiver : IWebHookHandler
     {
+        protected readonly IPurgeCachedContentRepository _purge;
+        public CacheInvalidationWebHookReceiver(IPurgeCachedContentRepository purge)
+        {
+            _purge = purge;
+        }
+
         public string[] ForActions
         {
             get
@@ -32,11 +38,7 @@ namespace Contentful.Essential.WebHooks.Receivers
             var jsonObject = request.GetJsonObject();
 
             Entry<dynamic> updatedEntry = jsonObject.ToObject<Entry<dynamic>>(JsonSerializer.Create(settings));
-
-            //TODO: will need to handle abstract type...
-            var repoType = typeof(BaseCachedContentRepository<>).MakeGenericType(typeof(BaseEntry));
-            ICachedContentRepository repo = (ICachedContentRepository)Activator.CreateInstance(repoType);
-            repo.PurgeCache(updatedEntry.SystemProperties.Id);
+            _purge.PurgeCache(updatedEntry.SystemProperties.Id);
 
             return new WebHookResponseMessage($"Cache purged for {updatedEntry.SystemProperties.Id}");
         }
