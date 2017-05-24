@@ -5,7 +5,7 @@ using System;
 
 namespace Contentful.Essential.WebHooks.Receivers
 {
-    public class CacheInvalidationWebHookReceiver : IWebHookHandler
+    public class CacheInvalidationWebHookReceiver : BaseWebHookReceiver
     {
         protected readonly IPurgeCachedContentRepository _purge;
         public CacheInvalidationWebHookReceiver(IPurgeCachedContentRepository purge)
@@ -13,26 +13,24 @@ namespace Contentful.Essential.WebHooks.Receivers
             _purge = purge;
         }
 
-        public string[] ForActions
+        public override string[] ForActions
         {
             get
             {
-                // TODO: consts for these values
-                return new[] { "publish", "unpublish" };
+                return new[] { WebHookActions.Publish, WebHookActions.Unpublish };
             }
         }
 
-        public string[] ForTypes
+        public override string[] ForTypes
         {
             get
             {
-                // TODO: consts for these values
-                return new[] { "Entry" };
+                return new[] { WebHookTypes.Entry };
             }
         }
 
 
-        public WebHookResponseMessage Process(WebHookRequestMessage request)
+        public override WebHookResponseMessage Process(WebHookRequestMessage request)
         {
             JsonSerializerSettings settings = new JsonSerializerSettings();
             var jsonObject = request.GetJsonObject();

@@ -2,7 +2,7 @@
 <package >
 	<metadata>
 		<id>Contentful.Essential</id>
-		<version>0.12-beta</version>
+		<version>0.13-beta</version>
 		<authors>Mercedes Bernard</authors>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>Core functionality for working with Contentful .NET SDK</description>
@@ -13,7 +13,7 @@
 		</dependencies>-->
 	</metadata>
 	<files>
-		<file src="web.config*.xdt" target="content" />
-	  <file src="Application\ContentTypeConfig.cs" target="content\App_Start" />
+		<file src="content\web.config*.xdt" target="content" />
+	  <file src="content\App_Start\ContentTypeConfig.cs.pp" target="content\App_Start" />
 	</files>
 </package>
