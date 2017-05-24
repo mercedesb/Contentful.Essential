@@ -1,20 +1,28 @@
-﻿using Microsoft.Practices.ServiceLocation;
+﻿using Microsoft.Extensions.DependencyInjection.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace Contentful.Essential.WebHooks
 {
-    public static partial class WebHookDispatcher
+    public partial class WebHookDispatcher
     {
+        protected readonly IServiceProvider _serviceProvider;
+        public WebHookDispatcher(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
         /// <summary>
         /// Compares the request to available handlers, executes matches, and returns log entires
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        public static List<WebHookResponseMessage> Process(WebHookRequestMessage request)
+        public List<WebHookResponseMessage> Process(WebHookRequestMessage request)
         {
+            
             var log = new List<WebHookResponseMessage>();
-            var handlers = ServiceLocator.Current.GetAllInstances<IWebHookHandler>().Where(h => IsMatch(h, request));
+            var handlers = _serviceProvider.GetServices<IWebHookHandler>().Where(h => IsMatch(h, request));
 
             foreach (var currHandler in handlers)
             {

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace Contentful.Essential.Models
 {
@@ -13,7 +14,7 @@ namespace Contentful.Essential.Models
     {
         public virtual async Task<T> Get(string id)
         {
-            ContentTypeAttribute contentTypeIdAttr = (ContentTypeAttribute)Attribute.GetCustomAttribute(typeof(T), typeof(ContentTypeAttribute));
+            ContentTypeAttribute contentTypeIdAttr = typeof(T).GetTypeInfo().GetCustomAttribute<ContentTypeAttribute>();
             if (contentTypeIdAttr != null)
             {
                 var builder = new QueryBuilder<T>().ContentTypeIs(contentTypeIdAttr.Id ?? typeof(T).FullName).FieldEquals(f => f.Sys.Id, id);
@@ -26,7 +27,7 @@ namespace Contentful.Essential.Models
 
         public virtual async Task<IEnumerable<T>> GetAll()
         {
-            ContentTypeAttribute contentTypeIdAttr = (ContentTypeAttribute)Attribute.GetCustomAttribute(typeof(T), typeof(ContentTypeAttribute));
+            ContentTypeAttribute contentTypeIdAttr = typeof(T).GetTypeInfo().GetCustomAttribute<ContentTypeAttribute>();
             if (contentTypeIdAttr != null)
             {
                 var builder = new QueryBuilder<T>().ContentTypeIs(contentTypeIdAttr.Id ?? typeof(T).FullName);

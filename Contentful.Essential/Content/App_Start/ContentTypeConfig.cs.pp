@@ -4,9 +4,9 @@ using Contentful.Essential.Models;
 using Microsoft.Practices.ServiceLocation;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
+using System.Reflection;	
 
-namespace Contentful.Essential.Application
+namespace $rootnamespace$
 {
     public class ContentTypeConfig
     {

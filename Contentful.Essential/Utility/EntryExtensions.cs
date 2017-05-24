@@ -52,7 +52,7 @@ namespace Contentful.Essential.Utility
 
         public static string GetContentTypeId(this Type contentType)
         {
-            ContentTypeAttribute contentTypeDef = (ContentTypeAttribute)Attribute.GetCustomAttribute(contentType, typeof(ContentTypeAttribute));
+            ContentTypeAttribute contentTypeDef = contentType.GetTypeInfo().GetCustomAttribute<ContentTypeAttribute>();
             if (contentTypeDef != null)
                 return contentTypeDef.Id ?? contentType.Name;
 
@@ -97,7 +97,7 @@ namespace Contentful.Essential.Utility
                     Type mgmtPropType = mgmtProp.PropertyType;
 
                     // if the type of the property is not Dictionary<string, someType>, skip
-                    if (!mgmtPropType.IsGenericType
+                    if (!mgmtPropType.GetTypeInfo().IsGenericType
                         || !typeof(Dictionary<,>).IsAssignableFrom(mgmtPropType.GetGenericTypeDefinition())
                         || !typeof(string).IsAssignableFrom(mgmtPropType.GetGenericArguments()[0]))
                         continue;
@@ -155,7 +155,7 @@ namespace Contentful.Essential.Utility
 
                     Type mgmtPropType = mgmtProp.PropertyType;
                     // if the type of the property is not Dictionary<string, someType>, skip
-                    if (!mgmtPropType.IsGenericType
+                    if (!mgmtPropType.GetTypeInfo().IsGenericType
                         || !typeof(Dictionary<,>).IsAssignableFrom(mgmtPropType.GetGenericTypeDefinition())
                         || !typeof(string).IsAssignableFrom(mgmtPropType.GetGenericArguments()[0]))
                         continue;

@@ -39,7 +39,7 @@ namespace Contentful.Essential
 		/// </summary>
 		private static void WriteLog(string message, Level level, Exception exception = null, string logger = null)
 		{
-			var logInstance = LogManager.GetLogger(logger);
+			var logInstance = LogManager.GetLogger(logger, string.Empty);
 			Write(logInstance, message, level, exception);
 		}
 

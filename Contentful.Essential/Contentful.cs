@@ -1,7 +1,5 @@
 ﻿using Contentful.Core;
-using Contentful.Core.Configuration;
 using Contentful.Core.Models;
-using Contentful.Essential.Configuration;
 using Contentful.Essential.Models;
 using Contentful.Essential.Models.Configuration;
 using log4net.Core;
@@ -18,19 +16,39 @@ namespace Contentful.Essential
 {
     public sealed class ContentDelivery
     {
-        private static readonly ContentDelivery instance = new ContentDelivery();
-        private static ContentfulClient client = new ContentfulClient(new HttpClient(), ConfigurationManager.Instance.ContentfulOptions);
-        private ContentDelivery() { }
+        private static Core.Configuration.ContentfulOptions _opts;
+        private static ContentfulClient client = new ContentfulClient(new HttpClient(), _opts);
+        private ContentDelivery(Contentful.Essential.Configuration.IContentfulOptions opts)
+        {
+            _opts = new Core.Configuration.ContentfulOptions
+            {
+                DeliveryApiKey = opts.DeliveryAPIKey,
+                ManagementApiKey = opts.ManagementAPIKey,
+                SpaceId = opts.SpaceID,
+                UsePreviewApi = opts.UsePreviewAPI,
+                MaxNumberOfRateLimitRetries = opts.MaxNumberOfRateLimitRetries
+            };
+        }
 
         public static ContentfulClient Instance { get { return client; } }
     }
 
     public class ContentManagement
     {
-        private static readonly ContentManagement instance = new ContentManagement();
-        private static readonly ContentManagementClient client = new ContentManagementClient(new HttpClient(), ConfigurationManager.Instance.ContentfulOptions);
+        private static Core.Configuration.ContentfulOptions _opts;
+        private static ContentManagementClient client = new ContentManagementClient(new HttpClient(), _opts);
 
-        private ContentManagement() { }
+        private ContentManagement(Contentful.Essential.Configuration.IContentfulOptions opts)
+        {
+            _opts = new Core.Configuration.ContentfulOptions
+            {
+                DeliveryApiKey = opts.DeliveryAPIKey,
+                ManagementApiKey = opts.ManagementAPIKey,
+                SpaceId = opts.SpaceID,
+                UsePreviewApi = opts.UsePreviewAPI,
+                MaxNumberOfRateLimitRetries = opts.MaxNumberOfRateLimitRetries
+            };
+        }
 
         public static ContentManagementClient Instance { get { return client; } }
         public class ContentManagementClient : ContentfulManagementClient
@@ -43,9 +61,9 @@ namespace Contentful.Essential
             /// The main class for interaction with the contentful deliver and preview APIs.
             /// </summary>
             /// <param name="httpClient">The HttpClient of your application.</param>
-            /// <param name="options">The options object used to retrieve the <see cref="ContentfulOptions"/> for this client.</param>
+            /// <param name="options">The options object used to retrieve the <see cref="Core.Configuration.ContentfulOptions"/> for this client.</param>
             /// <exception cref="ArgumentException">The <see name="options">options</see> parameter was null or empty</exception>
-            public ContentManagementClient(HttpClient httpClient, IOptions<ContentfulOptions> options) : base(httpClient, options)
+            public ContentManagementClient(HttpClient httpClient, IOptions<Core.Configuration.ContentfulOptions> options) : base(httpClient, options)
             {
                 EntryDynamicSerializerSettings.Converters.Add(new EntryDynamicTypeJsonConverter());
             }
@@ -54,9 +72,9 @@ namespace Contentful.Essential
             /// Initializes a new instance of the <see cref="ContentfulManagementClient"/> class.
             /// </summary>
             /// <param name="httpClient">The HttpClient of your application.</param>
-            /// <param name="options">The <see cref="ContentfulOptions"/> used for this client.</param>
-            public ContentManagementClient(HttpClient httpClient, ContentfulOptions options) :
-            this(httpClient, new OptionsWrapper<ContentfulOptions>(options))
+            /// <param name="options">The <see cref="Core.Configuration.ContentfulOptions"/> used for this client.</param>
+            public ContentManagementClient(HttpClient httpClient, Core.Configuration.ContentfulOptions options) :
+            this(httpClient, new OptionsWrapper<Core.Configuration.ContentfulOptions>(options))
             {
             }
 
@@ -67,7 +85,7 @@ namespace Contentful.Essential
             /// <param name="managementApiKey">The management API key used when communicating with the Contentful API</param>
             /// <param name="spaceId">The id of the space to fetch content from.</param>
             public ContentManagementClient(HttpClient httpClient, string managementApiKey, string spaceId) :
-            this(httpClient, new OptionsWrapper<ContentfulOptions>(new ContentfulOptions()
+            this(httpClient, new OptionsWrapper<Core.Configuration.ContentfulOptions>(new Core.Configuration.ContentfulOptions()
             {
                 ManagementApiKey = managementApiKey,
                 SpaceId = spaceId
