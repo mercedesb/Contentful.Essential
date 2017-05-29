@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+	<configSections>
+		<section name="contentful.essential" type="Contentful.Essential.Configuration.ContentfulEssentialSection, Contentful.Essential" allowLocation="true" allowDefinition="Everywhere" xdt:Locator="Match(name)" xdt:Transform="InsertIfMissing" />
+	</configSections>
+	<contentful.essential xdt:Transform="InsertIfMissing">
+		<contentfulOptions deliveryApiKey="ENTER_YOUR_API_KEY_HERE" managementApiKey="ENTER_YOUR_API_KEY_HERE" spaceId="ENTER_YOUR_SPACE_ID_HERE" usePreviewApi="false" maxNumberOfRateLimitRetries="0" />
+	</contentful.essential>
+</configuration>

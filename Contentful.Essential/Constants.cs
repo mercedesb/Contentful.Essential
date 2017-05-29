@@ -27,5 +27,4 @@
         public const string ContentType = "ContentType";
         public const string Entry = "Entry";
     }
-
 }

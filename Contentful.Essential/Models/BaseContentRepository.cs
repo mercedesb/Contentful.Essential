@@ -38,7 +38,7 @@ namespace Contentful.Essential.Models
 
         public virtual async Task<IEnumerable<T>> GetAll()
         {
-            ContentTypeAttribute contentTypeIdAttr = typeof(T).GetTypeInfo().GetCustomAttribute<ContentTypeAttribute>() ?? new ContentTypeAttribute();
+            ContentTypeAttribute contentTypeIdAttr = typeof(T).GetTypeInfo().GetCustomAttribute<ContentTypeAttribute>() ?? new ContentTypeAttribute();r
             var builder = new QueryBuilder<T>().ContentTypeIs(contentTypeIdAttr.Id ?? typeof(T).FullName);
             try
             {
