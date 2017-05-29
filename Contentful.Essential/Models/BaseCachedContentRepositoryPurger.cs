@@ -1,7 +1,10 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using System.Threading;
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> master
 namespace Contentful.Essential.Models
 {
     public class BaseCachedContentRepositoryPurger : IPurgeCachedContentRepository
@@ -40,4 +43,8 @@ namespace Contentful.Essential.Models
             return $"{CTS_KEY}_{entryKey}";
         }
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> master

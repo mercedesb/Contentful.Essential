@@ -16,4 +16,8 @@ namespace Contentful.Essential.Models.Configuration
         int MaxNumberOfRateLimitRetries { get; }
         ContentfulOptions GetOptionsObject();
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> master

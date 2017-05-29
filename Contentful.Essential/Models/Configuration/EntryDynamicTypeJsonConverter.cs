@@ -16,8 +16,8 @@ namespace Contentful.Essential.Models.Configuration
         /// <param name="objectType">The type to convert to.</param>
         public override bool CanConvert(Type objectType)
         {
-            return objectType.IsGenericType
-                && typeof(Dictionary<,>).IsAssignableFrom(objectType.GetGenericTypeDefinition())
+            return objectType.GetTypeInfo().IsGenericType
+                && typeof(Dictionary<,>).IsAssignableFrom(objectType.GetTypeInfo().GetGenericTypeDefinition())
                 && typeof(string).IsAssignableFrom(objectType.GetGenericArguments()[0])
                 && typeof(IContentType).IsAssignableFrom(objectType.GetGenericArguments()[1]);
         }
@@ -45,7 +45,7 @@ namespace Contentful.Essential.Models.Configuration
                 if (prop.GetSetMethod() == null)
                     continue;
 
-                jsonObject.TryGetValue(prop.Name, StringComparison.InvariantCultureIgnoreCase, out jToken);
+                jsonObject.TryGetValue(prop.Name, StringComparison.CurrentCultureIgnoreCase, out jToken);
 
                 if (jToken != null)
                 {
@@ -60,7 +60,7 @@ namespace Contentful.Essential.Models.Configuration
 
                         if (localeValue.Value == null || localeValue.Value.Type == JTokenType.Null || localeValue.Value.Type == JTokenType.Undefined)
                         {
-                            if (!prop.PropertyType.IsValueType || (Nullable.GetUnderlyingType(prop.PropertyType) != null))
+                            if (!prop.PropertyType.GetTypeInfo().IsValueType || (Nullable.GetUnderlyingType(prop.PropertyType) != null))
                                 prop.SetValue(entry, null);
                         }
                         else
@@ -91,7 +91,7 @@ namespace Contentful.Essential.Models.Configuration
         {
             if (localeValue.Value == null || localeValue.Value.Type == JTokenType.Null || localeValue.Value.Type == JTokenType.Undefined)
             {
-                if (!prop.PropertyType.IsValueType || (Nullable.GetUnderlyingType(prop.PropertyType) != null))
+                if (!prop.PropertyType.GetTypeInfo().IsValueType || (Nullable.GetUnderlyingType(prop.PropertyType) != null))
                 {
                     prop.SetValue(result, null);
                 }
