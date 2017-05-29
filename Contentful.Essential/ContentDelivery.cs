@@ -28,8 +28,4 @@ namespace Contentful.Essential
             }
         }
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> master

@@ -9,11 +9,6 @@ namespace Contentful.Essential.WebHooks.Receivers
     public abstract class BaseWebHookReceiver : IWebHookHandler
     {
         public abstract string[] ForActions { get; }
-<<<<<<< HEAD
-
-=======
-       
->>>>>>> master
         public abstract string[] ForTypes { get; }
         public abstract WebHookResponseMessage Process(WebHookRequestMessage request);
 
@@ -25,8 +20,4 @@ namespace Contentful.Essential.WebHooks.Receivers
             return matchesType && matchesAction;
         }
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> master
