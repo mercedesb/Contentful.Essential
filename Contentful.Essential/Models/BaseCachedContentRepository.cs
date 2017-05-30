@@ -70,7 +70,7 @@ namespace Contentful.Essential.Models
 
         public virtual async Task<IEnumerable<T>> Search(QueryBuilder<T> builder)
         {
-            string cacheKey = GetCacheKey();
+            string cacheKey = GetCacheKey(builder);
 
             IEnumerable<T> result;
             if (!_cache.TryGetValue(cacheKey, out result))
@@ -97,7 +97,7 @@ namespace Contentful.Essential.Models
             return $"{CACHE_KEY}_{typeof(T).Name}";
         }
 
-        protected virtual string GetCacheKey(QueryBuilder<Entry<T>> builder)
+        protected virtual string GetCacheKey(QueryBuilder<T> builder)
         {
             return $"{CACHE_KEY}_{typeof(T).Name}_{builder.Build()}";
         }
