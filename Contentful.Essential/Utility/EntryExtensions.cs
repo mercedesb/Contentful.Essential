@@ -1,5 +1,6 @@
 ﻿using Contentful.CodeFirst;
 using Contentful.Core.Models;
+using Contentful.Core.Models.Management;
 using Contentful.Essential.Models;
 using Contentful.Essential.Models.Configuration;
 using log4net.Core;
@@ -193,6 +194,43 @@ namespace Contentful.Essential.Utility
                 // SystemLog.Log(typeof(EntryExtensions), $"Unable to convert object of type {model.GetType()} to {typeof(T)}", Level.Error, ex);
                 return default(Entry<T>);
             }
+        }
+
+        public static void SetEntry<T>(this Dictionary<string, T> field, T entry, string locale)
+            where T : class, IContentType, new()
+        {
+            field[locale] = GetReferenceEntry<T>(entry);
+        }
+
+        public static void AddEntryToArray<T>(this Dictionary<string, List<T>> field, T entry, string locale)
+            where T : class, IContentType, new()
+        {
+            if (field == null)
+                field = new Dictionary<string, List<T>>();
+
+            if (!field.ContainsKey(locale))
+                field[locale] = new List<T>();
+
+            List<T> entries = field[locale];
+
+            if (entries == null)
+                entries = new List<T>();
+
+            entries.Add(GetReferenceEntry<T>(entry));
+        }
+
+        public static T GetReferenceEntry<T>(this T entry)
+            where T : class, IContentType, new()
+        {
+            return new T()
+            {
+                Sys = new SystemProperties
+                {
+                    Id = entry.Sys.Id,
+                    Type = SystemFieldTypes.Link,
+                    LinkType = SystemLinkTypes.Entry,
+                }
+            };
         }
     }
 }
