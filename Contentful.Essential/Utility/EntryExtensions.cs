@@ -3,7 +3,7 @@ using Contentful.Core.Models;
 using Contentful.Core.Models.Management;
 using Contentful.Essential.Models;
 using Contentful.Essential.Models.Configuration;
-using log4net.Core;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -60,7 +60,7 @@ namespace Contentful.Essential.Utility
             return string.Empty;
         }
 
-        public static T ToDeliveryEntry<T>(this Entry<dynamic> model, string locale) where T : IContentType
+        public static T ToDeliveryEntry<T>(this Entry<dynamic> model, string locale, ILogger logger = null) where T : IContentType
         {
             JObject returnedFields = model.Fields as JObject;
             if (returnedFields != null)
@@ -72,22 +72,23 @@ namespace Contentful.Essential.Utility
                     Dictionary<string, T> allLocales = returnedFields.ToObject<Dictionary<string, T>>(JsonSerializer.Create(entryDynamicSerializerSettings));
                     if (!allLocales.ContainsKey(locale))
                     {
-                        // TODO: logging
-                        // SystemLog.Log(typeof(EntryExtensions), $"Entry for locale {locale} does not exist. Returning default instead", Level.Warn);
+                        if (logger != null)
+                            logger.LogWarning($"Entry for locale {locale} does not exist. Returning default instead");
+
                         return allLocales.First().Value;
                     }
                     return allLocales[locale];
                 }
                 catch (Exception ex)
                 {
-                    // TODO: logging
-                    // SystemLog.Log(typeof(EntryExtensions), $"Unable to deserialize CMA response to type {typeof(T)}", Level.Error, ex);
+                    if (logger != null)
+                        logger.LogError(LoggingEvents.CDA_CMA_TypeConversionError, ex, $"Unable to deserialize CMA response to type {typeof(T)}");
                 }
             }
             return default(T);
         }
 
-        public static T ToDeliveryEntry<T, V>(this Entry<V> model, string locale)
+        public static T ToDeliveryEntry<T, V>(this Entry<V> model, string locale, ILogger logger = null)
             where T : class, IContentType, new()
             where V : class, IManagementContentType
         {
@@ -124,9 +125,8 @@ namespace Contentful.Essential.Utility
                     }
                     catch (Exception ex)
                     {
-                        // TODO: logging
-                        // SystemLog.Log(typeof(EntryExtensions), $"Unable to set property {deliveryProp.Name} on object of type {typeof(T)} from object of type {model.Fields.GetType()}", Level.Error, ex);
-
+                        if (logger != null)
+                            logger.LogError(LoggingEvents.CDA_CMA_TypeConversionError, ex, $"Unable to set property {deliveryProp.Name} on object of type {typeof(T)} from object of type {model.Fields.GetType()}");
                     }
                 }
                 result.Sys = model.SystemProperties;
@@ -134,13 +134,13 @@ namespace Contentful.Essential.Utility
             }
             catch (Exception ex)
             {
-                // TODO: logging
-                // SystemLog.Log(typeof(EntryExtensions), $"Unable to convert object of type {model.Fields.GetType()} to {typeof(T)}", Level.Error, ex);
+                if (logger != null)
+                    logger.LogError(LoggingEvents.CDA_CMA_TypeConversionError, ex, $"Unable to convert object of type {model.Fields.GetType()} to {typeof(T)}");
                 return default(T);
             }
         }
 
-        public static Entry<T> ToManagementEntry<T, V>(this V model, string locale)
+        public static Entry<T> ToManagementEntry<T, V>(this V model, string locale, ILogger logger = null)
             where T : class, IManagementContentType, new()
             where V : class, IContentType
         {
@@ -179,8 +179,8 @@ namespace Contentful.Essential.Utility
                     }
                     catch (Exception ex)
                     {
-                        // TODO: logging
-                        // SystemLog.Log(typeof(EntryExtensions), $"Unable to set property {mgmtProp.Name} on object of type {typeof(T)} from object of type {model.GetType()}", Level.Error, ex);
+                        if (logger != null)
+                            logger.LogError(LoggingEvents.CDA_CMA_TypeConversionError, ex, $"Unable to set property {mgmtProp.Name} on object of type {typeof(T)} from object of type {model.GetType()}");
                     }
                 }
                 Entry<T> entry = new Entry<T>();
@@ -190,8 +190,9 @@ namespace Contentful.Essential.Utility
             }
             catch (Exception ex)
             {
-                // TODO: logging
-                // SystemLog.Log(typeof(EntryExtensions), $"Unable to convert object of type {model.GetType()} to {typeof(T)}", Level.Error, ex);
+                if (logger != null)
+                    logger.LogError(LoggingEvents.CDA_CMA_TypeConversionError, ex, $"Unable to convert object of type {model.GetType()} to {typeof(T)}");
+
                 return default(Entry<T>);
             }
         }

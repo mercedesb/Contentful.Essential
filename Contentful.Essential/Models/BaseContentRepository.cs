@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 
 namespace Contentful.Essential.Models
 {
@@ -14,9 +15,12 @@ namespace Contentful.Essential.Models
         where T : class, IContentType
     {
         protected readonly IContentDeliveryClient _deliveryClient;
-        public BaseContentRepository(IContentDeliveryClient deliveryClient)
+        protected readonly ILogger<BaseContentRepository<T>> _logger;
+
+        public BaseContentRepository(IContentDeliveryClient deliveryClient, ILogger<BaseContentRepository<T>> logger)
         {
             _deliveryClient = deliveryClient;
+            _logger = logger;
         }
 
         public virtual async Task<T> Get(string id)
@@ -31,8 +35,7 @@ namespace Contentful.Essential.Models
             }
             catch (Exception ex)
             {
-                // TODO: logging
-                //SystemLog.Log(this, $"Unable to get entry {id} for type {typeof(T).Name}", Level.Error, ex);
+                _logger.LogError(LoggingEvents.CDAError, ex, $"Unable to get entry {id} for type {typeof(T).Name}");
             }
             return null;
         }
@@ -48,8 +51,7 @@ namespace Contentful.Essential.Models
             }
             catch (Exception ex)
             {
-                // TODO: logging
-                // SystemLog.Log(this, $"Unable to get all entries for type {typeof(T).Name}", Level.Error, ex);
+                _logger.LogError(LoggingEvents.CDAError, ex, $"Unable to get all entries for type {typeof(T).Name}");
             }
             return Enumerable.Empty<T>();
         }
@@ -65,8 +67,7 @@ namespace Contentful.Essential.Models
             }
             catch (Exception ex)
             {
-                // TODO: logging
-                // SystemLog.Log(this, $"Unable to get entries matching criteria {builder.Build()} for type {typeof(T).Name}", Level.Error, ex);
+                _logger.LogError(LoggingEvents.CDAError, ex, $"Unable to get entries matching criteria {builder.Build()} for type {typeof(T).Name}");
             }
             return Enumerable.Empty<T>();
         }

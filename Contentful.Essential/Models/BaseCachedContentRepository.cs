@@ -6,6 +6,7 @@ using Microsoft.Extensions.Caching.Memory;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
 using System.Threading;
+using Microsoft.Extensions.Logging;
 
 namespace Contentful.Essential.Models
 {
@@ -14,9 +15,9 @@ namespace Contentful.Essential.Models
     {
         protected readonly IContentRepository<T> _repo;
 
-        public BaseCachedContentRepository(IContentDeliveryClient deliveryClient, IMemoryCache memoryCache) : base(memoryCache)
+        public BaseCachedContentRepository(IContentDeliveryClient deliveryClient, IMemoryCache memoryCache, ILogger<BaseContentRepository<T>> logger) : base(memoryCache)
         {
-            _repo = new BaseContentRepository<T>(deliveryClient);
+            _repo = new BaseContentRepository<T>(deliveryClient, logger);
         }
 
         public virtual async Task<T> Get(string id)

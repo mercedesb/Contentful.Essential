@@ -4,6 +4,7 @@ using Contentful.Core.Models;
 using Contentful.Essential.Models;
 using Contentful.Essential.Models.Configuration;
 using log4net.Core;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -31,17 +32,19 @@ namespace Contentful.Essential
             }
         }
 
-        public ContentManagement(IContentfulOptions options)
+        public ContentManagement(IContentfulOptions options, ILogger<IContentManagementClient> logger)
         {
             if (_instance == null)
             {
-                _instance = new ContentfulManagementClientWrapper(new HttpClient(), options.GetOptionsObject());
+                _instance = new ContentfulManagementClientWrapper(new HttpClient(), options.GetOptionsObject(), logger);
             }
         }
     }
 
     public class ContentfulManagementClientWrapper : ContentfulManagementClient
     {
+        protected readonly ILogger<IContentManagementClient> _logger;
+
         internal JsonSerializer EntryDynamicSerializer => JsonSerializer.Create(EntryDynamicSerializerSettings);
         public JsonSerializerSettings EntryDynamicSerializerSettings { get; set; } = new JsonSerializerSettings();
 
@@ -52,8 +55,9 @@ namespace Contentful.Essential
         /// <param name="httpClient">The HttpClient of your application.</param>
         /// <param name="options">The options object used to retrieve the <see cref="ContentfulOptions"/> for this client.</param>
         /// <exception cref="ArgumentException">The <see name="options">options</see> parameter was null or empty</exception>
-        public ContentfulManagementClientWrapper(HttpClient httpClient, IOptions<ContentfulOptions> options) : base(httpClient, options)
+        public ContentfulManagementClientWrapper(HttpClient httpClient, IOptions<ContentfulOptions> options, ILogger<IContentManagementClient> logger) : base(httpClient, options)
         {
+            _logger = logger;
             EntryDynamicSerializerSettings.Converters.Add(new EntryDynamicTypeJsonConverter());
         }
 
@@ -62,8 +66,8 @@ namespace Contentful.Essential
         /// </summary>
         /// <param name="httpClient">The HttpClient of your application.</param>
         /// <param name="options">The <see cref="ContentfulOptions"/> used for this client.</param>
-        public ContentfulManagementClientWrapper(HttpClient httpClient, ContentfulOptions options) :
-        this(httpClient, new OptionsWrapper<ContentfulOptions>(options))
+        public ContentfulManagementClientWrapper(HttpClient httpClient, ContentfulOptions options, ILogger<IContentManagementClient> logger) :
+        this(httpClient, new OptionsWrapper<ContentfulOptions>(options), logger)
         {
         }
 
@@ -73,12 +77,12 @@ namespace Contentful.Essential
         /// <param name="httpClient">The HttpClient of your application.</param>
         /// <param name="managementApiKey">The management API key used when communicating with the Contentful API</param>
         /// <param name="spaceId">The id of the space to fetch content from.</param>
-        public ContentfulManagementClientWrapper(HttpClient httpClient, string managementApiKey, string spaceId) :
+        public ContentfulManagementClientWrapper(HttpClient httpClient, string managementApiKey, string spaceId, ILogger<IContentManagementClient> logger) :
         this(httpClient, new OptionsWrapper<ContentfulOptions>(new ContentfulOptions()
         {
             ManagementApiKey = managementApiKey,
             SpaceId = spaceId
-        }))
+        }), logger)
         {
         }
 
@@ -192,8 +196,7 @@ namespace Contentful.Essential
                 }
                 catch (Exception ex)
                 {
-                    // TODO: logging
-                    // SystemLog.Log(this, $"Unable to deserialize CMA response to type {typeof(Dictionary<string, T>)}", Level.Error, ex);
+                    _logger.LogError(LoggingEvents.CustomDynamicSerializationError, ex, $"Unable to deserialize CMA response to type {typeof(Dictionary<string, T>)}");
                 }
             }
             return default(Dictionary<string, T>);

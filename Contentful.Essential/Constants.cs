@@ -27,4 +27,11 @@
         public const string ContentType = "ContentType";
         public const string Entry = "Entry";
     }
+
+    public class LoggingEvents
+    {
+        public const int CustomDynamicSerializationError = 1000;
+        public const int CDAError = 1001;
+        public const int CDA_CMA_TypeConversionError = 1002;
+    }
 }
