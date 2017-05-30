@@ -13,9 +13,9 @@ namespace Contentful.Essential.Models
         {
             _cache = memoryCache;
         }
-        public virtual void PurgeCache(string id)
+        public virtual void PurgeCache(string entryId, string contentTypeId)
         {
-            string cacheKey = GetCacheKey(id);
+            string cacheKey = GetCacheKey(entryId);
             if (_cache.TryGetValue(cacheKey, out object val))
             {
                 _cache.Remove(cacheKey);
@@ -23,23 +23,20 @@ namespace Contentful.Essential.Models
             else
             {
                 // purge for just this item
-                string ctsKey = GetCancellationTokenSourceCacheKey(GetCacheKey(id));
+                string ctsKey = GetCancellationTokenSourceCacheKey(GetCacheKey(entryId));
                 CancellationTokenSource cts = _cache.Get<CancellationTokenSource>(ctsKey);
                 if (cts != null)
                     cts.Cancel();
 
                 // capture any dependencies not captured above (i.e. newly published entry)
-                ctsKey = GetCancellationTokenSourceCacheKey(GetCacheKey());
+                ctsKey = GetCancellationTokenSourceCacheKey(GetCacheKey(contentTypeId));
                 cts = _cache.Get<CancellationTokenSource>(ctsKey);
                 if (cts != null)
                     cts.Cancel();
             }
         }
 
-        protected virtual string GetCacheKey()
-        {
-            return $"{CACHE_KEY}_{typeof(T).Name}";
-        }
+
 
         protected virtual string GetCacheKey(string id)
         {

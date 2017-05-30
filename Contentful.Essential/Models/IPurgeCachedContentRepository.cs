@@ -2,6 +2,6 @@
 {
     public interface IPurgeCachedContentRepository
     {
-        void PurgeCache(string id);
+        void PurgeCache(string entryId, string contentTypeId);
     }
 }

@@ -36,7 +36,7 @@ namespace Contentful.Essential.WebHooks.Receivers
             var jsonObject = request.GetJsonObject();
 
             Entry<dynamic> updatedEntry = jsonObject.ToObject<Entry<dynamic>>(JsonSerializer.Create(settings));
-            _purge.PurgeCache(updatedEntry.SystemProperties.Id);
+            _purge.PurgeCache(updatedEntry.SystemProperties.Id, updatedEntry.SystemProperties.ContentType.SystemProperties.Id);
 
             return new WebHookResponseMessage($"Cache purged for {updatedEntry.SystemProperties.Id}");
         }

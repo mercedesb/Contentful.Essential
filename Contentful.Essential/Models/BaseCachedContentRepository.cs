@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
 using System.Threading;
 using Microsoft.Extensions.Logging;
+using Contentful.CodeFirst;
+using System.Reflection;
 
 namespace Contentful.Essential.Models
 {
@@ -96,6 +98,12 @@ namespace Contentful.Essential.Models
             }
 
             return result;
+        }
+
+        protected virtual string GetCacheKey()
+        {
+            ContentTypeAttribute contentTypeIdAttr = typeof(T).GetTypeInfo().GetCustomAttribute<ContentTypeAttribute>() ?? new ContentTypeAttribute();
+            return $"{CACHE_KEY}_{contentTypeIdAttr.Id ?? typeof(T).Name}";
         }
 
         protected virtual string GetCacheKey(QueryBuilder<T> builder)
