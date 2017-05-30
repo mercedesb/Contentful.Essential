@@ -71,14 +71,16 @@ namespace Contentful.Essential.Utility
                     Dictionary<string, T> allLocales = returnedFields.ToObject<Dictionary<string, T>>(JsonSerializer.Create(entryDynamicSerializerSettings));
                     if (!allLocales.ContainsKey(locale))
                     {
-                        SystemLog.Log(typeof(EntryExtensions), $"Entry for locale {locale} does not exist. Returning default instead", Level.Warn);
+                        // TODO: logging
+                        // SystemLog.Log(typeof(EntryExtensions), $"Entry for locale {locale} does not exist. Returning default instead", Level.Warn);
                         return allLocales.First().Value;
                     }
                     return allLocales[locale];
                 }
                 catch (Exception ex)
                 {
-                    SystemLog.Log(typeof(EntryExtensions), $"Unable to deserialize CMA response to type {typeof(T)}", Level.Error, ex);
+                    // TODO: logging
+                    // SystemLog.Log(typeof(EntryExtensions), $"Unable to deserialize CMA response to type {typeof(T)}", Level.Error, ex);
                 }
             }
             return default(T);
@@ -121,7 +123,8 @@ namespace Contentful.Essential.Utility
                     }
                     catch (Exception ex)
                     {
-                        SystemLog.Log(typeof(EntryExtensions), $"Unable to set property {deliveryProp.Name} on object of type {typeof(T)} from object of type {model.Fields.GetType()}", Level.Error, ex);
+                        // TODO: logging
+                        // SystemLog.Log(typeof(EntryExtensions), $"Unable to set property {deliveryProp.Name} on object of type {typeof(T)} from object of type {model.Fields.GetType()}", Level.Error, ex);
 
                     }
                 }
@@ -130,7 +133,8 @@ namespace Contentful.Essential.Utility
             }
             catch (Exception ex)
             {
-                SystemLog.Log(typeof(EntryExtensions), $"Unable to convert object of type {model.Fields.GetType()} to {typeof(T)}", Level.Error, ex);
+                // TODO: logging
+                // SystemLog.Log(typeof(EntryExtensions), $"Unable to convert object of type {model.Fields.GetType()} to {typeof(T)}", Level.Error, ex);
                 return default(T);
             }
         }
@@ -174,8 +178,8 @@ namespace Contentful.Essential.Utility
                     }
                     catch (Exception ex)
                     {
-                        SystemLog.Log(typeof(EntryExtensions), $"Unable to set property {mgmtProp.Name} on object of type {typeof(T)} from object of type {model.GetType()}", Level.Error, ex);
-
+                        // TODO: logging
+                        // SystemLog.Log(typeof(EntryExtensions), $"Unable to set property {mgmtProp.Name} on object of type {typeof(T)} from object of type {model.GetType()}", Level.Error, ex);
                     }
                 }
                 Entry<T> entry = new Entry<T>();
@@ -185,7 +189,8 @@ namespace Contentful.Essential.Utility
             }
             catch (Exception ex)
             {
-                SystemLog.Log(typeof(EntryExtensions), $"Unable to convert object of type {model.GetType()} to {typeof(T)}", Level.Error, ex);
+                // TODO: logging
+                // SystemLog.Log(typeof(EntryExtensions), $"Unable to convert object of type {model.GetType()} to {typeof(T)}", Level.Error, ex);
                 return default(Entry<T>);
             }
         }

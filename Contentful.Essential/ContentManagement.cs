@@ -192,7 +192,8 @@ namespace Contentful.Essential
                 }
                 catch (Exception ex)
                 {
-                    SystemLog.Log(this, $"Unable to deserialize CMA response to type {typeof(Dictionary<string, T>)}", Level.Error, ex);
+                    // TODO: logging
+                    // SystemLog.Log(this, $"Unable to deserialize CMA response to type {typeof(Dictionary<string, T>)}", Level.Error, ex);
                 }
             }
             return default(Dictionary<string, T>);

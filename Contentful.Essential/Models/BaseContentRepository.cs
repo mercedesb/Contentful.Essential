@@ -31,7 +31,8 @@ namespace Contentful.Essential.Models
             }
             catch (Exception ex)
             {
-                SystemLog.Log(this, $"Unable to get entry {id} for type {typeof(T).Name}", Level.Error, ex);
+                // TODO: logging
+                //SystemLog.Log(this, $"Unable to get entry {id} for type {typeof(T).Name}", Level.Error, ex);
             }
             return null;
         }
@@ -47,7 +48,8 @@ namespace Contentful.Essential.Models
             }
             catch (Exception ex)
             {
-                SystemLog.Log(this, $"Unable to get all entries for type {typeof(T).Name}", Level.Error, ex);
+                // TODO: logging
+                // SystemLog.Log(this, $"Unable to get all entries for type {typeof(T).Name}", Level.Error, ex);
             }
             return Enumerable.Empty<T>();
         }
@@ -63,7 +65,8 @@ namespace Contentful.Essential.Models
             }
             catch (Exception ex)
             {
-                SystemLog.Log(this, $"Unable to get entries matching criteria {builder.Build()} for type {typeof(T).Name}", Level.Error, ex);
+                // TODO: logging
+                // SystemLog.Log(this, $"Unable to get entries matching criteria {builder.Build()} for type {typeof(T).Name}", Level.Error, ex);
             }
             return Enumerable.Empty<T>();
         }
