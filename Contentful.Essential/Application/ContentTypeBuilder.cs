@@ -73,9 +73,9 @@ namespace Contentful.CodeFirst
 
                     Fields = new List<Field>()
                 };
-                foreach (var prop in type.GetProperties())
+                foreach (var prop in type.GetTypeInfo().DeclaredProperties)
                 {
-                    if (prop.GetSetMethod() == null || prop.GetCustomAttribute<IgnoreContentFieldAttribute>() != null)
+                    if (prop.SetMethod == null || prop.GetCustomAttribute<IgnoreContentFieldAttribute>() != null)
                     {
                         continue;
                     }
@@ -94,7 +94,7 @@ namespace Contentful.CodeFirst
                         Validations = new List<IFieldValidator>()
                     };
                     var validationAttributes = prop.GetCustomAttributes<ContentfulValidationAttribute>();
-                    var isCollectionProperty = typeof(ICollection).IsAssignableFrom(prop.PropertyType);
+                    var isCollectionProperty = typeof(ICollection).GetTypeInfo().IsAssignableFrom(prop.PropertyType.GetTypeInfo());
 
                     if (isCollectionProperty)
                     {

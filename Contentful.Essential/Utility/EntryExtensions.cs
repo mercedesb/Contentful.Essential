@@ -25,11 +25,11 @@ namespace Contentful.Essential.Utility
             // need to get locales
             var fields = new ExpandoObject() as IDictionary<string, object>;
 
-            PropertyInfo[] props = model.GetType().GetProperties();
+            IEnumerable<PropertyInfo> props = model.GetType().GetTypeInfo().DeclaredProperties;
             Dictionary<string, object> localeValues;
             foreach (var prop in props)
             {
-                if (prop.GetSetMethod() == null || prop.GetCustomAttribute<IgnoreContentFieldAttribute>() != null)
+                if (prop.SetMethod == null || prop.GetCustomAttribute<IgnoreContentFieldAttribute>() != null)
                     continue;
 
                 localeValues = new Dictionary<string, object>();
@@ -96,26 +96,27 @@ namespace Contentful.Essential.Utility
             {
                 Type deliveryType = typeof(T);
                 T result = new T();
-                foreach (PropertyInfo mgmtProp in model.Fields.GetType().GetProperties())
+                foreach (PropertyInfo mgmtProp in model.Fields.GetType().GetTypeInfo().DeclaredProperties)
                 {
                     Type mgmtPropType = mgmtProp.PropertyType;
 
                     // if the type of the property is not Dictionary<string, someType>, skip
                     if (!mgmtPropType.GetTypeInfo().IsGenericType
-                        || !typeof(Dictionary<,>).IsAssignableFrom(mgmtPropType.GetGenericTypeDefinition())
-                        || !typeof(string).IsAssignableFrom(mgmtPropType.GetGenericArguments()[0]))
+                        || !typeof(Dictionary<,>).GetTypeInfo().IsAssignableFrom(mgmtPropType.GetGenericTypeDefinition().GetTypeInfo())
+                        || !typeof(string).GetTypeInfo().IsAssignableFrom(mgmtPropType.GetGenericArguments()[0].GetTypeInfo()))
                         continue;
 
-                    PropertyInfo deliveryProp = deliveryType.GetProperty(mgmtProp.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase);
+                    //TODO: handle prop name casing
+                    PropertyInfo deliveryProp = deliveryType.GetTypeInfo().GetDeclaredProperty(mgmtProp.Name);
                     // if a property with a matching name doesn't exist on the delivery type, skip
                     if (deliveryProp == null)
                         continue;
 
-                    if (deliveryProp.GetSetMethod() == null || deliveryProp.GetCustomAttribute<IgnoreContentFieldAttribute>() != null)
+                    if (deliveryProp.SetMethod == null || deliveryProp.GetCustomAttribute<IgnoreContentFieldAttribute>() != null)
                         continue;
 
                     // if mgmt prop's second dictionary argument type is not assignable from the delivery prop's type, skip
-                    if (!mgmtPropType.GetGenericArguments()[1].IsAssignableFrom(deliveryProp.PropertyType))
+                    if (!mgmtPropType.GetGenericArguments()[1].GetTypeInfo().IsAssignableFrom(deliveryProp.PropertyType.GetTypeInfo()))
                         continue;
 
                     IDictionary mgmtPropValue = (IDictionary)mgmtProp.GetValue(model.Fields);
@@ -148,25 +149,26 @@ namespace Contentful.Essential.Utility
             {
                 Type mgmtType = typeof(T);
                 T result = new T();
-                foreach (PropertyInfo deliveryProp in model.GetType().GetProperties())
+                foreach (PropertyInfo deliveryProp in model.GetType().GetTypeInfo().DeclaredProperties)
                 {
-                    PropertyInfo mgmtProp = mgmtType.GetProperty(deliveryProp.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase);
+                    // TODO: handle prop name casing
+                    PropertyInfo mgmtProp = mgmtType.GetTypeInfo().GetDeclaredProperty(deliveryProp.Name);
                     // if a property with a matching name doesn't exist on the mgmt type, skip
                     if (mgmtProp == null)
                         continue;
 
-                    if (mgmtProp.GetSetMethod() == null)
+                    if (mgmtProp.SetMethod == null)
                         continue;
 
                     Type mgmtPropType = mgmtProp.PropertyType;
                     // if the type of the property is not Dictionary<string, someType>, skip
                     if (!mgmtPropType.GetTypeInfo().IsGenericType
-                        || !typeof(Dictionary<,>).IsAssignableFrom(mgmtPropType.GetGenericTypeDefinition())
-                        || !typeof(string).IsAssignableFrom(mgmtPropType.GetGenericArguments()[0]))
+                        || !typeof(Dictionary<,>).GetTypeInfo().IsAssignableFrom(mgmtPropType.GetGenericTypeDefinition().GetTypeInfo())
+                        || !typeof(string).GetTypeInfo().IsAssignableFrom(mgmtPropType.GetGenericArguments()[0].GetTypeInfo()))
                         continue;
 
                     // if mgmt prop's second dictionary argument type is not assignable from the delivery prop's type, skip
-                    if (!mgmtPropType.GetGenericArguments()[1].IsAssignableFrom(deliveryProp.PropertyType))
+                    if (!mgmtPropType.GetGenericArguments()[1].GetTypeInfo().IsAssignableFrom(deliveryProp.PropertyType.GetTypeInfo()))
                         continue;
 
                     var dlvyPropValue = deliveryProp.GetValue(model);

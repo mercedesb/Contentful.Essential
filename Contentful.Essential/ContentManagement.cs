@@ -3,7 +3,6 @@ using Contentful.Core.Configuration;
 using Contentful.Core.Models;
 using Contentful.Essential.Models;
 using Contentful.Essential.Models.Configuration;
-using log4net.Core;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;

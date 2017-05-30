@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Contentful.Essential.Utility;
 
 namespace Contentful.CodeFirst
 {
@@ -51,7 +52,7 @@ namespace Contentful.CodeFirst
                 return SystemFieldTypes.Link;
             }
 
-            if (typeof(ICollection).IsAssignableFrom(type))
+            if (typeof(ICollection).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
             {
                 return SystemFieldTypes.Array;
             }
@@ -115,7 +116,7 @@ namespace Contentful.CodeFirst
 
         public static Type GetItemType(Type type)
         {
-            if (typeof(ICollection).IsAssignableFrom(type))
+            if (typeof(ICollection).GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
             {
                 Type itemType = null;
                 if (type.IsConstructedGenericType)
