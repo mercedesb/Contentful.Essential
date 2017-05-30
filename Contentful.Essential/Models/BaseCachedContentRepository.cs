@@ -15,9 +15,9 @@ namespace Contentful.Essential.Models
     {
         protected readonly IContentRepository<T> _repo;
 
-        public BaseCachedContentRepository(IContentDeliveryClient deliveryClient, IMemoryCache memoryCache, ILogger<BaseContentRepository<T>> logger) : base(memoryCache)
-        {
-            _repo = new BaseContentRepository<T>(deliveryClient, logger);
+        //public BaseCachedContentRepository(IContentDeliveryClient deliveryClient, IMemoryCache memoryCache, ILogger<BaseContentRepository<T>> logger) : base(memoryCache)
+        public BaseCachedContentRepository(IContentDeliveryClient deliveryClient, IMemoryCache memoryCache) : base(memoryCache)        {
+            _repo = new BaseContentRepository<T>(deliveryClient);
         }
 
         public virtual async Task<T> Get(string id)

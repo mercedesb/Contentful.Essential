@@ -16,10 +16,11 @@ namespace Contentful.Essential.Models
         protected readonly IContentDeliveryClient _deliveryClient;
         protected readonly ILogger<BaseContentRepository<T>> _logger;
 
-        public BaseContentRepository(IContentDeliveryClient deliveryClient, ILogger<BaseContentRepository<T>> logger)
+        //public BaseContentRepository(IContentDeliveryClient deliveryClient, ILogger<BaseContentRepository<T>> logger)
+        public BaseContentRepository(IContentDeliveryClient deliveryClient)
         {
             _deliveryClient = deliveryClient;
-            _logger = logger;
+            //_logger = logger;
         }
 
         public virtual async Task<T> Get(string id)
