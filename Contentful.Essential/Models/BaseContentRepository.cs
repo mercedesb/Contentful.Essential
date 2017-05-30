@@ -26,7 +26,7 @@ namespace Contentful.Essential.Models
         public virtual async Task<T> Get(string id)
         {
             ContentTypeAttribute contentTypeIdAttr = typeof(T).GetTypeInfo().GetCustomAttribute<ContentTypeAttribute>() ?? new ContentTypeAttribute();
-            var builder = new QueryBuilder<T>().ContentTypeIs(contentTypeIdAttr.Id ?? typeof(T).FullName).FieldEquals(f => f.Sys.Id, id);
+            var builder = new QueryBuilder<T>().ContentTypeIs(contentTypeIdAttr.Id ?? typeof(T).Name).FieldEquals(f => f.Sys.Id, id);
             // need to use GetEntries b/c including referenced content is only supported for the methods that return collections. 
             try
             {
@@ -43,7 +43,7 @@ namespace Contentful.Essential.Models
         public virtual async Task<IEnumerable<T>> GetAll()
         {
             ContentTypeAttribute contentTypeIdAttr = typeof(T).GetTypeInfo().GetCustomAttribute<ContentTypeAttribute>() ?? new ContentTypeAttribute();
-            var builder = new QueryBuilder<T>().ContentTypeIs(contentTypeIdAttr.Id ?? typeof(T).FullName);
+            var builder = new QueryBuilder<T>().ContentTypeIs(contentTypeIdAttr.Id ?? typeof(T).Name);
             try
             {
                 IEnumerable<T> entries = await _deliveryClient.Instance.GetEntriesAsync<T>(builder);
@@ -59,7 +59,7 @@ namespace Contentful.Essential.Models
         public virtual async Task<IEnumerable<T>> Search(QueryBuilder<T> builder)
         {
             ContentTypeAttribute contentTypeIdAttr = typeof(T).GetTypeInfo().GetCustomAttribute<ContentTypeAttribute>() ?? new ContentTypeAttribute();
-            builder = builder.ContentTypeIs(contentTypeIdAttr.Id ?? typeof(T).FullName);
+            builder = builder.ContentTypeIs(contentTypeIdAttr.Id ?? typeof(T).Name);
             try
             {
                 IEnumerable<T> entries = await _deliveryClient.Instance.GetEntriesAsync<T>(builder);
