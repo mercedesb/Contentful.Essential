@@ -61,6 +61,9 @@ namespace Contentful.Essential.Models
                         CancellationTokenSource cts = GetCancellationTokenSource(item.Sys.Id);
                         opts.AddExpirationToken(new CancellationChangeToken(cts.Token));
                     }
+                    CancellationTokenSource ctsAll = GetCancellationTokenSource();
+                    opts.AddExpirationToken(new CancellationChangeToken(ctsAll.Token));
+
                     _cache.Set(cacheKey, result, opts);
                 }
             }
@@ -85,6 +88,9 @@ namespace Contentful.Essential.Models
                         CancellationTokenSource cts = GetCancellationTokenSource(item.Sys.Id);
                         opts.AddExpirationToken(new CancellationChangeToken(cts.Token));
                     }
+                    CancellationTokenSource ctsAll = GetCancellationTokenSource();
+                    opts.AddExpirationToken(new CancellationChangeToken(ctsAll.Token));
+
                     _cache.Set(cacheKey, result, opts);
                 }
             }
@@ -92,14 +98,21 @@ namespace Contentful.Essential.Models
             return result;
         }
 
-        protected virtual string GetCacheKey()
-        {
-            return $"{CACHE_KEY}_{typeof(T).Name}";
-        }
-
         protected virtual string GetCacheKey(QueryBuilder<T> builder)
         {
             return $"{CACHE_KEY}_{typeof(T).Name}_{builder.Build()}";
+        }
+
+        protected virtual CancellationTokenSource GetCancellationTokenSource()
+        {
+            string ctsKey = GetCancellationTokenSourceCacheKey(GetCacheKey());
+            CancellationTokenSource cts = _cache.Get<CancellationTokenSource>(ctsKey);
+            if (cts == null)
+            {
+                cts = new CancellationTokenSource();
+                _cache.Set(ctsKey, cts);
+            }
+            return cts;
         }
 
         protected virtual CancellationTokenSource GetCancellationTokenSource(string id)
