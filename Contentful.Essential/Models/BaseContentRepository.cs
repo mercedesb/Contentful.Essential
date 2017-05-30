@@ -35,7 +35,7 @@ namespace Contentful.Essential.Models
             }
             catch (Exception ex)
             {
-                _logger.LogError(LoggingEvents.CDAError, ex, $"Unable to get entry {id} for type {typeof(T).Name}");
+                //_logger.LogError(LoggingEvents.CDAError, ex, $"Unable to get entry {id} for type {typeof(T).Name}");
             }
             return null;
         }
@@ -51,7 +51,7 @@ namespace Contentful.Essential.Models
             }
             catch (Exception ex)
             {
-                _logger.LogError(LoggingEvents.CDAError, ex, $"Unable to get all entries for type {typeof(T).Name}");
+                //_logger.LogError(LoggingEvents.CDAError, ex, $"Unable to get all entries for type {typeof(T).Name}");
             }
             return Enumerable.Empty<T>();
         }
@@ -67,7 +67,7 @@ namespace Contentful.Essential.Models
             }
             catch (Exception ex)
             {
-                _logger.LogError(LoggingEvents.CDAError, ex, $"Unable to get entries matching criteria {builder.Build()} for type {typeof(T).Name}");
+                //_logger.LogError(LoggingEvents.CDAError, ex, $"Unable to get entries matching criteria {builder.Build()} for type {typeof(T).Name}");
             }
             return Enumerable.Empty<T>();
         }

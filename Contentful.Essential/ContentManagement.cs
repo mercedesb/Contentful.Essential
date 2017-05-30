@@ -199,7 +199,7 @@ namespace Contentful.Essential
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(LoggingEvents.CustomDynamicSerializationError, ex, $"Unable to deserialize CMA response to type {typeof(Dictionary<string, T>)}");
+                    //_logger.LogError(LoggingEvents.CustomDynamicSerializationError, ex, $"Unable to deserialize CMA response to type {typeof(Dictionary<string, T>)}");
                 }
             }
             return default(Dictionary<string, T>);
