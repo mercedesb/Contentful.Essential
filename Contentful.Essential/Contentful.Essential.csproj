@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard1.4</TargetFramework>
     <PackageId>Contentful.Essential</PackageId>
-    <PackageVersion>0.16-beta</PackageVersion>
+    <PackageVersion>0.16.1-beta</PackageVersion>
     <Authors>Mercedes Bernard</Authors>
     <Description>Core functionality for working with Contentful .NET SDK</Description>
     <PackageReleaseNotes>First release</PackageReleaseNotes>
@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="contentful.csharp" Version="0.13.6-beta" />
+    <PackageReference Include="Contentful.Essential.CodeFirst" Version="0.1.0-beta" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.2" />
     <PackageReference Include="System.Collections" Version="4.3.0" />
