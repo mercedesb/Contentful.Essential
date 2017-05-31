@@ -202,13 +202,13 @@ namespace Contentful.Essential.Utility
             }
         }
 
-        public static void SetEntry<T>(this Dictionary<string, T> field, T entry, string locale)
+        public static void SetEntry<T>(this Dictionary<string, T> field, string entryId, string locale)
             where T : class, IContentType, new()
         {
-            field[locale] = GetReferenceEntry<T>(entry);
+            field[locale] = GetReferenceEntry<T>(entryId);
         }
 
-        public static void AddEntryToArray<T>(this Dictionary<string, List<T>> field, T entry, string locale)
+        public static void AddEntryToArray<T>(this Dictionary<string, List<T>> field, string entryId, string locale)
             where T : class, IContentType, new()
         {
             if (field == null)
@@ -222,17 +222,17 @@ namespace Contentful.Essential.Utility
             if (entries == null)
                 entries = new List<T>();
 
-            entries.Add(GetReferenceEntry<T>(entry));
+            entries.Add(GetReferenceEntry<T>(entryId));
         }
 
-        public static T GetReferenceEntry<T>(this T entry)
+        public static T GetReferenceEntry<T>(this string entryId)
             where T : class, IContentType, new()
         {
             return new T()
             {
                 Sys = new SystemProperties
                 {
-                    Id = entry.Sys.Id,
+                    Id = entryId,
                     Type = SystemFieldTypes.Link,
                     LinkType = SystemLinkTypes.Entry,
                 }
