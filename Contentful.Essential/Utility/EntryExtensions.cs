@@ -53,7 +53,7 @@ namespace Contentful.Essential.Utility
 
         public static string GetContentTypeId(this Type contentType)
         {
-            ContentTypeAttribute contentTypeDef = contentType.GetTypeInfo().GetCustomAttribute<ContentTypeAttribute>();
+            ContentTypeAttribute contentTypeDef = contentType.GetTypeInfo().GetCustomAttribute<ContentTypeAttribute>() ?? new ContentTypeAttribute();
             if (contentTypeDef != null)
                 return contentTypeDef.Id ?? contentType.Name;
 
