@@ -53,7 +53,7 @@ namespace Contentful.Essential.Utility
 
         public static string GetContentTypeId(this Type contentType)
         {
-            ContentTypeAttribute contentTypeDef = contentType.GetTypeInfo().GetCustomAttribute<ContentTypeAttribute>() ?? new ContentTypeAttribute();
+            ContentTypeAttribute contentTypeDef = contentType.GetTypeInfo().GetCustomAttribute<ContentTypeAttribute>();
             if (contentTypeDef != null)
                 return contentTypeDef.Id ?? contentType.Name;
 
@@ -217,12 +217,10 @@ namespace Contentful.Essential.Utility
             if (!field.ContainsKey(locale))
                 field[locale] = new List<T>();
 
-            List<T> entries = field[locale];
+            if (field[locale] == null)
+                field[locale] = new List<T>();
 
-            if (entries == null)
-                entries = new List<T>();
-
-            entries.Add(GetReferenceEntry<T>(entryId));
+            field[locale].Add(GetReferenceEntry<T>(entryId));
         }
 
         public static T GetReferenceEntry<T>(this string entryId)
